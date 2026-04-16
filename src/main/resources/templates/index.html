@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DomiJose - Pedidos a domicilio</title>
+    <link rel="stylesheet" th:href="@{/css/marketplace.css}">
+</head>
+<body>
+
+    <div th:replace="~{fragmentos/header :: header}"></div>
+
+    <section class="hero">
+        <h1>Los mejores platos</h1>
+        <p>a tu puerta</p>
+        <a th:href="@{/productos}" class="btn-hero">Ver productos</a>
+    </section>
+
+    <div class="container">
+        <div class="section-header">
+            <h2>Productos destacados</h2>
+            <a th:href="@{/productos}">Ver todos →</a>
+        </div>
+        
+        <div class="products-grid" th:if="${not #lists.isEmpty(productos)}">
+            <div th:each="producto : ${productos}" th:replace="~{fragmentos/product-card :: product-card(producto=${producto})}"></div>
+        </div>
+        
+        <div class="empty-state" th:if="${#lists.isEmpty(productos)}">
+            <p>No hay productos disponibles</p>
+        </div>
+    </div>
+
+    <div th:replace="~{fragmentos/footer :: footer}"></div>
+
+</body>
+</html>

@@ -1,0 +1,12 @@
+<div th:fragment="product-card(producto)" class="product-card">
+    <a th:href="@{/productos/{id}(id=${producto.id})}">
+        <img th:src="${producto.imageUrl != null ? producto.imageUrl : '/images/productos/placeholder.svg'}"
+            class="product-image" th:alt="${producto.name}">
+        <div class="product-info">
+            <div class="product-name" th:text="${producto.name}">Nombre</div>
+            <div class="product-description" th:text="${producto.description}">Descripción</div>
+            <div class="product-price">$ <span th:text="${#numbers.formatDecimal(producto.price, 0, 'COMMA')}">0</span>
+            </div>
+        </div>
+    </a>
+</div>

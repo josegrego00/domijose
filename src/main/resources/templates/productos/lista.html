@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Productos - DomiJose</title>
+    <link rel="stylesheet" th:href="@{/css/marketplace.css}">
+</head>
+<body>
+
+    <div th:replace="~{fragmentos/header :: header}"></div>
+
+    <div class="container">
+        <div class="section-header">
+            <h2>Todos los productos</h2>
+        </div>
+
+        <form th:action="@{/productos/buscar}" method="get" class="search-box">
+            <input type="text" name="q" th:value="${busqueda}" placeholder="Buscar productos...">
+            <button type="submit">Buscar</button>
+        </form>
+
+        <div th:if="${param.success}" class="alert alert-success">
+            Producto creado exitosamente
+        </div>
+        <div th:if="${param.updated}" class="alert alert-success">
+            Producto actualizado exitosamente
+        </div>
+        <div th:if="${param.deleted}" class="alert alert-success">
+            Producto eliminado exitosamente
+        </div>
+
+        <div class="products-grid" th:if="${not #lists.isEmpty(productos)}">
+            <div th:each="producto : ${productos}" th:replace="~{fragmentos/product-card :: product-card(producto=${producto})}"></div>
+        </div>
+
+        <div class="empty-state" th:if="${#lists.isEmpty(productos)}">
+            <p th:if="${busqueda}">No se encontraron productos para "<span th:text="${busqueda}"></span>"</p>
+            <p th:unless="${busqueda}">No hay productos disponibles</p>
+            <a th:href="@{/productos}" class="btn-hero">Ver todos</a>
+        </div>
+    </div>
+
+    <div th:replace="~{fragmentos/footer :: footer}"></div>
+
+</body>
+</html>

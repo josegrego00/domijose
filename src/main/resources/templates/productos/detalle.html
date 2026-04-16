@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title th:text="${producto.name} + ' - DomiJose'">Detalle - DomiJose</title>
+    <link rel="stylesheet" th:href="@{/css/marketplace.css}">
+</head>
+<body>
+
+    <div th:replace="~{fragmentos/header :: header}"></div>
+
+    <div class="container">
+        <a th:href="@{/productos}" style="color: #7ED957; display: block; margin: 16px 0;">← Volver a productos</a>
+        
+        <div class="product-detail">
+            <img th:src="${producto.imageUrl != null ? producto.imageUrl : '/images/productos/placeholder.svg'}" 
+                 class="product-detail-image" 
+                 th:alt="${producto.name}">
+            
+            <div class="product-detail-info">
+                <h1 class="product-detail-name" th:text="${producto.name}">Nombre del producto</h1>
+                
+                <div class="product-detail-price">$[[${#numbers.formatInteger(producto.price, 0)}]]</div>
+                
+                <p class="product-detail-description" th:text="${producto.description}">Descripción</p>
+                
+                <div class="product-stock" th:if="${producto.stock > 0}">
+                    ✓ Disponible (<span th:text="${producto.stock}"></span> unidades)
+                </div>
+                <div class="product-stock" style="color: #E53935;" th:if="${producto.stock == 0}">
+                    ✗ Agotado
+                </div>
+
+                <div class="quantity-selector">
+                    <button type="button">-</button>
+                    <input type="number" value="1" min="1" th:max="${producto.stock}">
+                    <button type="button">+</button>
+                </div>
+
+                <button class="btn-add-cart" sec:authorize="isAuthenticated()" th:disabled="${producto.stock == 0}">
+                    Agregar al carrito
+                </button>
+                
+                <button class="btn-add-cart" sec:authorize="isAnonymous()" onclick="location.href='/login'">
+                    Iniciar sesión para comprar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragmentos/footer :: footer}"></div>
+
+</body>
+</html>

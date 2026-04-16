@@ -1,0 +1,13 @@
+<header th:fragment="header" class="header">
+    <div class="header-content">
+        <a th:href="@{/}" class="logo">🍽️ DomiJose</a>
+        <div class="nav-links">
+            <a th:href="@{/productos}">Productos</a>
+            <a th:href="@{/pedidos/mis-pedidos}" sec:authorize="isAuthenticated()">Mis Pedidos</a>
+            <a th:href="@{/admin/productos}" sec:authorize="hasRole('ADMIN')">Admin</a>
+            <a th:href="@{/login}" sec:authorize="isAnonymous()">Ingresar</a>
+            <a th:href="@{/registro}" sec:authorize="isAnonymous()">Registrarse</a>
+            <a th:href="@{/logout}" sec:authorize="isAuthenticated()">Cerrar Sesión</a>
+        </div>
+    </div>
+</header>
