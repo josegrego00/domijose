@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 
@@ -30,8 +31,9 @@ public class ProductDTO {
     private String imageUrl;
     private boolean available;
     private String category;
+    private MultipartFile imagenFile;
 
-    public ProductDTO(Long id, String name, String description, BigDecimal price, 
+    public ProductDTO(Long id, String name, String description, BigDecimal price,
                       Integer stock, String imageUrl, boolean available, String category) {
         this.id = id;
         this.name = name;

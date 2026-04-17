@@ -1,7 +1,9 @@
 package com.domicilio.domijose.services;
 
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,14 +15,22 @@ import java.util.UUID;
 
 @Service
 public class FileService {
-    private static final Logger log = LoggerFactory.getLogger(FileService.class);
-    
-    private final Path uploadPath = Paths.get("src/main/resources/static/images/productos");
 
-    public FileService() {
+    private static final Logger log = LoggerFactory.getLogger(FileService.class);
+
+    @Value("${app.upload.path:src/main/resources/static/images/productos/}")
+    private String uploadPath;
+
+    @Value("${app.upload.url:/images/productos/}")
+    private String uploadUrl;
+
+    @PostConstruct
+    public void init() {
         try {
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
+            Path path = Paths.get(uploadPath);
+            if (!Files.exists(path)) {
+                Files.createDirectories(path);
+                log.info("Directorio de uploads creado: {}", uploadPath);
             }
         } catch (IOException e) {
             log.error("No se pudo crear el directorio de uploads", e);
@@ -31,20 +41,20 @@ public class FileService {
         if (file == null || file.isEmpty()) {
             return null;
         }
-        
+
         try {
             String originalFilename = file.getOriginalFilename();
             String extension = "";
             if (originalFilename != null && originalFilename.contains(".")) {
                 extension = originalFilename.substring(originalFilename.lastIndexOf("."));
             }
-            
+
             String filename = UUID.randomUUID().toString() + extension;
-            Path filePath = uploadPath.resolve(filename);
+            Path filePath = Paths.get(uploadPath).resolve(filename);
             Files.copy(file.getInputStream(), filePath);
-            
+
             log.info("Imagen guardada: {}", filename);
-            return "/images/productos/" + filename;
+            return uploadUrl + filename;
         } catch (IOException e) {
             log.error("Error al guardar la imagen", e);
             throw new RuntimeException("Error al guardar la imagen");

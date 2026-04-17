@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Admin - Productos | DomiJose</title>
+    <link rel="stylesheet" th:href="@{/css/marketplace.css}">
+</head>
+<body>
+
+    <div th:replace="~{fragmentos/header :: header}"></div>
+
+    <div class="container">
+        <div class="section-header">
+            <h1>📦 Gestión de Productos</h1>
+            <a th:href="@{/admin/productos/nuevo}" class="btn-new">➕ Nuevo Producto</a>
+        </div>
+
+        <div th:if="${param.success}" class="alert alert-success">
+            Producto creado exitosamente
+        </div>
+
+        <div th:if="${param.updated}" class="alert alert-success">
+            Producto actualizado exitosamente
+        </div>
+
+        <div th:if="${param.deleted}" class="alert alert-success">
+            Producto desactivado exitosamente
+        </div>
+
+        <div th:if="${param.activated}" class="alert alert-success">
+            Producto activado exitosamente
+        </div>
+
+        <div th:if="${param.error}" class="alert alert-error">
+            Error: Producto no encontrado
+        </div>
+
+        <div class="table-responsive">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th>Categoría</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="producto : ${productos}">
+                        <td th:text="${producto.id}">1</td>
+                        <td th:text="${producto.name}">Producto</td>
+                        <td>$ <span th:text="${#numbers.formatDecimal(producto.price, 0, 'COMMA', 0, 'POINT')}">0</span></td>
+                        <td th:text="${producto.stock}">10</td>
+                        <td th:text="${producto.category}">Lácteos</td>
+                        <td>
+                            <span th:if="${producto.available}" class="badge badge-active">Activo</span>
+                            <span th:unless="${producto.available}" class="badge badge-inactive">Inactivo</span>
+                        </td>
+                        <td class="actions">
+                            <a th:href="@{/admin/productos/editar/{id}(id=${producto.id})}" class="btn-edit">✏️ Editar</a>
+                            <span th:if="${producto.available}">
+                                <a th:href="@{/admin/productos/desactivar/{id}(id=${producto.id})}" class="btn-delete" onclick="return confirm('¿Desactivar este producto?')">🗑️ Desactivar</a>
+                            </span>
+                            <span th:unless="${producto.available}">
+                                <a th:href="@{/admin/productos/activar/{id}(id=${producto.id})}" class="btn-activate">✅ Activar</a>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(productos)}">
+                        <td colspan="7" class="empty-state">
+                            No hay productos registrados
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div th:replace="~{fragmentos/footer :: footer}"></div>
+
+</body>
+</html>

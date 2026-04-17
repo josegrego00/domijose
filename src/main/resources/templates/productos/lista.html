@@ -31,7 +31,9 @@
         </div>
 
         <div class="products-grid" th:if="${not #lists.isEmpty(productos)}">
-            <div th:each="producto : ${productos}" th:replace="~{fragmentos/product-card :: product-card(producto=${producto})}"></div>
+            <div th:each="producto : ${productos}">
+                <div th:insert="~{fragmentos/product-card :: product-card(producto=${producto})}"></div>
+            </div>
         </div>
 
         <div class="empty-state" th:if="${#lists.isEmpty(productos)}">

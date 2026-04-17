@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title th:text="${producto.id != null ? 'Editar Producto' : 'Nuevo Producto'}">Producto | DomiJose</title>
+    <link rel="stylesheet" th:href="@{/css/marketplace.css}">
+</head>
+<body>
+
+    <div th:replace="~{fragmentos/header :: header}"></div>
+
+    <div class="container">
+        <div class="form-container">
+            <h2 th:text="${producto.id != null ? '✏️ Editar Producto' : '➕ Nuevo Producto'}">Nuevo Producto</h2>
+
+            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+            <form th:action="${producto.id != null ? '/admin/productos/actualizar' : '/admin/productos/guardar'}" th:object="${producto}" method="post" enctype="multipart/form-data">
+                <input type="hidden" th:field="*{id}">
+
+                <div class="form-group">
+                    <label for="name">Nombre del Producto:</label>
+                    <input type="text" id="name" th:field="*{name}" required placeholder="Ej: Leche Entera 1L">
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Descripción:</label>
+                    <textarea id="description" th:field="*{description}" rows="3" placeholder="Describe el producto..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="price">Precio ($):</label>
+                    <input type="number" id="price" th:field="*{price}" step="100" min="0" required placeholder="5000">
+                </div>
+
+                <div class="form-group">
+                    <label for="stock">Stock (cantidad):</label>
+                    <input type="number" id="stock" th:field="*{stock}" min="0" required placeholder="100">
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Categoría:</label>
+                    <select id="category" th:field="*{category}">
+                        <option value="">Seleccionar categoría</option>
+                        <option value="Lácteos">🥛 Lácteos</option>
+                        <option value="Despensa">🥫 Despensa</option>
+                        <option value="Frutas">🍎 Frutas</option>
+                        <option value="Verduras">🥬 Verduras</option>
+                        <option value="Bebidas">🥤 Bebidas</option>
+                        <option value="Limpieza">🧹 Limpieza</option>
+                        <option value="Panadería">🍞 Panadería</option>
+                        <option value="Carnes">🥩 Carnes</option>
+                        <option value="Otros">📦 Otros</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Imagen del producto</label>
+                    <div class="image-upload">
+                        <button type="button" class="btn-image-upload" id="btnSeleccionarImagen">
+                            📷 Seleccionar imagen
+                        </button>
+                        <input type="file" id="imagenFile" name="imagenFile" accept="image/*" style="display: none;" th:field="*{imagenFile}">
+                        <span class="file-name" id="nombreArchivo">Ningún archivo seleccionado</span>
+                    </div>
+                    <div class="image-preview" id="previewContainer" style="display: none;">
+                        <img id="previewImagen" style="max-width: 150px; border-radius: 8px;">
+                        <p style="color: #666; font-size: 12px; margin-top: 4px;">Vista previa</p>
+                    </div>
+                    <div th:if="${producto.imageUrl}" class="current-image" style="margin-top: 12px;">
+                        <img th:src="@{${producto.imageUrl}}" style="max-width: 150px; border-radius: 8px;">
+                        <p style="color: #666; font-size: 12px;">Imagen actual</p>
+                    </div>
+                </div>
+
+                <div class="form-group" th:if="${producto.id != null}">
+                    <label for="available">Estado:</label>
+                    <select id="available" th:field="*{available}">
+                        <option th:value="true" th:selected="${producto.available == true}">Activo</option>
+                        <option th:value="false" th:selected="${producto.available == false}">Inactivo</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-form">💾 Guardar Producto</button>
+                <a th:href="@{/admin/productos}" class="btn-form btn-form-secondary">Cancelar</a>
+            </form>
+        </div>
+    </div>
+
+    <div th:replace="~{fragmentos/footer :: footer}"></div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const btnSeleccionar = document.getElementById('btnSeleccionarImagen');
+        const inputFile = document.getElementById('imagenFile');
+        const nombreArchivo = document.getElementById('nombreArchivo');
+        const previewContainer = document.getElementById('previewContainer');
+        const previewImagen = document.getElementById('previewImagen');
+
+        if (btnSeleccionar && inputFile) {
+            btnSeleccionar.addEventListener('click', function() {
+                inputFile.click();
+            });
+
+            inputFile.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                
+                if (file) {
+                    nombreArchivo.textContent = file.name;
+                    
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            previewImagen.src = e.target.result;
+                            previewContainer.style.display = 'block';
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        previewContainer.style.display = 'none';
+                    }
+                } else {
+                    nombreArchivo.textContent = 'Ningún archivo seleccionado';
+                    previewContainer.style.display = 'none';
+                }
+            });
+        }
+    });
+    </script>
+
+</body>
+</html>
