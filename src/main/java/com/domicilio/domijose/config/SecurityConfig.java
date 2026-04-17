@@ -37,8 +37,10 @@ public class SecurityConfig {
                         .successHandler(successHandler())
                         .permitAll())
                 .logout(logout -> logout
-                        .logoutUrl("/login?logout")
-                        .logoutSuccessUrl("/")
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/?logout=true")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
                         .permitAll());
         return http.build();
     }

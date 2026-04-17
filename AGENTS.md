@@ -151,5 +151,21 @@ src/main/java/com/domicilio/domijose/
 
 #### CLIENTE
 - `GET /pedidos/mis-pedidos` - Ver mis pedidos
+- `GET /pedidos/{id}` - Ver detalle de pedido
+- `POST /pedidos/{id}/cancelar` - Cancelar pedido (solo PENDIENTE)
 - `GET /carrito` - Ver carrito
 - `POST /carrito/agregar` - Agregar al carrito
+
+---
+
+## Módulos Implementados
+
+### Módulo Órdenes (CLIENTE)
+- **DTO**: `OrderDTO` con `OrderItemDTO` anidado
+- **Mapper**: `OrderMapper` (MapStruct)
+- **Repository**: `OrderRepository`
+- **Service**: `OrderService` (listar, crear, cancelar)
+- **Controller**: `OrderController` (CLIENTE)
+
+### Módulo Logging
+- `LoggingControllerAdvice`: Registra usuario en sesión por request

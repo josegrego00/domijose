@@ -5,10 +5,12 @@ Aplicación web para gestión de pedidos a domicilio (delivery) desarrollada con
 ## 🚀 Características
 
 - **Gestión de productos**: CRUD completo de productos con upload de imágenes
+- **Gestión de pedidos**: CLIENTE puede ver sus pedidos y cancelar si están PENDIENTE
 - **Autenticación**: Registro e inicio de sesión con Spring Security
 - **Roles**: CLIENTE (hacer pedidos) y ADMIN (gestionar menú)
 - **Diseño Mobile-First**: Interfaz responsiva optimizada para móviles
 - **Estilo Minimalista**: CSS personalizado con paleta verde manzana
+- **Logging**: Registro de sesiones de usuarios
 
 ## 🛠️ Tech Stack
 

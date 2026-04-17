@@ -1,13 +1,19 @@
 <header th:fragment="header" class="header">
     <div class="header-content">
-        <a th:href="@{/}" class="logo">🍽️ DomiJose</a>
-        <div class="nav-links">
-            <a th:href="@{/productos}">Productos</a>
-            <a th:href="@{/pedidos/mis-pedidos}" sec:authorize="isAuthenticated()">Mis Pedidos</a>
-            <a th:href="@{/admin/productos}" sec:authorize="hasRole('ADMIN')">Admin</a>
-            <a th:href="@{/login}" sec:authorize="isAnonymous()">Ingresar</a>
-            <a th:href="@{/registro}" sec:authorize="isAnonymous()">Registrarse</a>
-            <a th:href="@{/logout}" sec:authorize="isAuthenticated()">Cerrar Sesión</a>
-        </div>
+        <a th:href="@{/}" class="logo">🛒 KMP</a>
+        <nav class="nav-menu">
+            <ul class="nav-links">
+                <li><a th:href="@{/productos}">Productos</a></li>
+                <li sec:authorize="isAuthenticated()"><a th:href="@{/pedidos/mis-pedidos}">🛍️ Mis Pedidos</a></li>
+                <li sec:authorize="hasRole('ADMIN')"><a th:href="@{/admin/productos}">Admin</a></li>
+                <li sec:authorize="isAnonymous()"><a th:href="@{/login}">Ingresar</a></li>
+                <li sec:authorize="isAnonymous()"><a th:href="@{/registro}">Registrarse</a></li>
+                <li sec:authorize="isAuthenticated()">
+                    <form th:action="@{/logout}" method="post" style="display:inline;">
+                        <button type="submit" class="btn-link">⏻</button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
     </div>
 </header>
