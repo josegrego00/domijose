@@ -41,7 +41,9 @@ src/main/resources/
 │   │   ├── login.css
 │   │   ├── registro.css
 │   │   └── marketplace.css
-│   └── js/
+│   ├── js/
+│   └── images/
+│       └── productos/    ← Imágenes de productos
 └── templates/
     ├── index.html
     ├── login.html
@@ -50,10 +52,13 @@ src/main/resources/
     │   ├── header.html
     │   ├── footer.html
     │   └── product-card.html
-    └── productos/
-        ├── lista.html
-        ├── detalle.html
-        └── form.html
+    ├── productos/
+    │   ├── lista.html
+    │   └── detalle.html
+    └── admin/
+        └── productos/
+            ├── lista.html
+            └── form.html
 ```
 
 ### Estilos CSS
