@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nuevo QR | DomiJose</title>
+    <link rel="stylesheet" th:href="@{/css/marketplace.css}">
+</head>
+<body>
+
+    <div th:replace="~{fragmentos/header :: header}"></div>
+
+    <div class="container">
+        <div class="form-container">
+            <h2>📱 Nuevo Código QR</h2>
+
+            <form th:action="@{/admin/metodo-pago/qr}" th:object="${metodoPago}" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label>Imagen del QR</label>
+                    <div class="image-upload">
+                        <button type="button" class="btn-image-upload" id="btnSeleccionarQr">
+                            📷 Seleccionar imagen QR
+                        </button>
+                        <input type="file" id="qrFile" name="qrFile" accept="image/*" style="display: none;">
+                        <span class="file-name" id="nombreArchivo">Ningún archivo seleccionado</span>
+                    </div>
+                    <div class="image-preview" id="previewContainer" style="display: none;">
+                        <img id="previewImagen" style="max-width: 150px; border-radius: 8px;">
+                        <p style="color: #FF8C42; font-size: 12px; margin-top: 4px;">📸 Vista previa</p>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-form">💾 Guardar QR</button>
+                <a th:href="@{/admin/metodo-pago}" class="btn-form btn-form-secondary">❌ Cancelar</a>
+            </form>
+        </div>
+    </div>
+
+    <div th:replace="~{fragmentos/footer :: footer}"></div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const btnSeleccionar = document.getElementById('btnSeleccionarQr');
+        const inputFile = document.getElementById('qrFile');
+        const nombreArchivo = document.getElementById('nombreArchivo');
+        const previewContainer = document.getElementById('previewContainer');
+        const previewImagen = document.getElementById('previewImagen');
+
+        if (btnSeleccionar && inputFile) {
+            btnSeleccionar.addEventListener('click', function() {
+                inputFile.click();
+            });
+
+            inputFile.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                
+                if (file) {
+                    nombreArchivo.textContent = file.name;
+                    
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            previewImagen.src = e.target.result;
+                            previewContainer.style.display = 'block';
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        previewContainer.style.display = 'none';
+                    }
+                } else {
+                    nombreArchivo.textContent = 'Ningún archivo seleccionado';
+                    previewContainer.style.display = 'none';
+                }
+            });
+        }
+    });
+    </script>
+
+</body>
+</html>

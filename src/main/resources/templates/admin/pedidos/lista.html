@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pedidos | DomiJose</title>
+    <link rel="stylesheet" th:href="@{/css/marketplace.css}">
+</head>
+<body>
+
+    <div th:replace="~{fragmentos/header :: header}"></div>
+
+    <div class="container">
+        <h2>📋 Pedidos</h2>
+
+        <div th:if="${success}" class="alert alert success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+        <div th:if="${pedidos.empty}" class="empty-state">
+            <p>No hay pedidos</p>
+        </div>
+
+        <div th:each="pedido : ${pedidos}" class="card-item">
+            <div class="card-info">
+                <strong>Pedido #<span th:text="${pedido.id}"></span></strong>
+                <p>Cliente: <span th:text="${pedido.userFullName}"></span></p>
+                <p>Estado: <span th:text="${pedido.status}"></span></p>
+                <p>Total: $<span th:text="${#numbers.formatDecimal(pedido.totalAmount, 1, 2)}"></span></p>
+                <p th:text="${#temporals.format(pedido.orderDate, 'dd/MM/yyyy HH:mm')}"></p>
+            </div>
+            <a th:href="@{/admin/pedidos/{id}(id=${pedido.id})}" class="btn-form">Ver</a>
+        </div>
+
+        <a th:href="@{/}" class="btn-form btn-form-secondary">🏠 Inicio</a>
+    </div>
+
+    <div th:replace="~{fragmentos/footer :: footer}"></div>
+
+</body>
+</html>

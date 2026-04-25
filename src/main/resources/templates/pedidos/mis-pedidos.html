@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mis Pedidos - DomiJose</title>
+    <link rel="stylesheet" th:href="@{/css/marketplace.css}">
+</head>
+<body>
+
+    <div th:replace="~{fragmentos/header :: header}"></div>
+
+    <main class="container">
+        <h1 class="page-title">📋 Mis Pedidos</h1>
+
+        <div th:if="${param.success}" class="alert-success">
+            <span th:text="${param.success}"></span>
+        </div>
+        <div th:if="${param.error}" class="alert-error">
+            <span th:text="${param.error}"></span>
+        </div>
+
+        <div th:if="${#lists.isEmpty(pedidos)}" class="empty-state">
+            <div class="empty-icon">📦</div>
+            <p>No tienes pedidos aún</p>
+            <a th:href="@{/productos}" class="btn-primary">Hacer mi primer pedido</a>
+        </div>
+
+        <div class="orders-list" th:if="${not #lists.isEmpty(pedidos)}">
+            <div th:each="pedido : ${pedidos}" class="order-card">
+                <div class="order-header">
+                    <span class="order-id">Pedido #<span th:text="${pedido.id}"></span></span>
+                    <span class="order-status" th:class="${'badge ' + pedido.status.name().toLowerCase()}" 
+                          th:text="${pedido.status.name()}">PENDIENTE</span>
+                </div>
+                
+                <div class="order-info">
+                    <p class="order-date">
+                        📅 <span th:text="${#temporals.format(pedido.orderDate, 'dd/MM/yyyy HH:mm')}"></span>
+                    </p>
+                    <p class="order-total">
+                        💰 Total: $<span th:text="${#numbers.formatDecimal(pedido.totalAmount, 1, 2)}"></span>
+                    </p>
+                </div>
+                
+                <div class="order-items-summary">
+                    <span th:text="${pedido.items.size()} + ' producto(s)'"></span>
+                </div>
+                
+                <div class="order-actions">
+                    <a th:href="@{/pedidos/{id}(id=${pedido.id})}" class="btn-secondary">
+                        👁️ Ver Detalle
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragmentos/footer :: footer}"></div>
+
+</body>
+</html>

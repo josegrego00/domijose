@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Métodos de Pago | DomiJose</title>
+    <link rel="stylesheet" th:href="@{/css/marketplace.css}">
+</head>
+<body>
+
+    <div th:replace="~{fragmentos/header :: header}"></div>
+
+    <div class="container">
+        <h2>💳 Métodos de Pago</h2>
+
+        <div th:if="${success}" class="alert alert success" th:text="${success}"></div>
+
+        <div class="section">
+            <div class="section-header">
+                <h3>🏦 Cuentas Bancarias</h3>
+                <a th:href="@{/admin/metodo-pago/cuenta/nueva}" class="btn-form">➕ Agregar Cuenta</a>
+            </div>
+
+            <div th:if="${cuentas.empty}" class="empty-state">
+                <p>No hay cuentas registradas</p>
+            </div>
+
+            <div th:each="cuenta : ${cuentas}" class="card-item">
+                <div class="card-info">
+                    <strong th:text="${cuenta.banco}">Banco</strong>
+                    <p th:text="${cuenta.tipoCuenta + ' - ' + cuenta.numeroCuenta}">Tipo - Número</p>
+                    <p th:text="${cuenta.nombreTitular}">Titular</p>
+                </div>
+                <form th:action="@{/admin/metodo-pago/cuenta/{id}/eliminar(id=${cuenta.id})}" method="post">
+                    <button type="submit" class="btn-icon btn-delete">🗑️</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <h3>📱 Códigos QR</h3>
+                <a th:href="@{/admin/metodo-pago/qr/nuevo}" class="btn-form">➕ Agregar QR</a>
+            </div>
+
+            <div th:if="${qrs.empty}" class="empty-state">
+                <p>No hay códigos QR registrados</p>
+            </div>
+
+            <div th:each="qr : ${qrs}" class="card-item">
+                <div class="card-info">
+                    <img th:src="${'/' + qr.qrUrl}" style="max-width: 100px; border-radius: 8px;">
+                </div>
+                <form th:action="@{/admin/metodo-pago/qr/{id}/eliminar(id=${qr.id})}" method="post">
+                    <button type="submit" class="btn-icon btn-delete">🗑️</button>
+                </form>
+            </div>
+        </div>
+
+        <a th:href="@{/}" class="btn-form btn-form-secondary">🏠 Volver al Inicio</a>
+    </div>
+
+    <div th:replace="~{fragmentos/footer :: footer}"></div>
+
+</body>
+</html>

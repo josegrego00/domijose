@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Configurar Pago - DomiJose Admin</title>
+    <link rel="stylesheet" th:href="@{/css/marketplace.css}">
+</head>
+<body>
+
+    <div th:replace="~{fragmentos/header :: header}"></div>
+
+    <main class="container">
+        <a th:href="@{/admin}" class="back-link">← Panel Admin</a>
+        
+        <h1 class="page-title">💳 Configurar Método de Pago</h1>
+
+        <div th:if="${param.success}" class="alert-success">
+            <span th:text="${param.success}"></span>
+        </div>
+
+        <form th:action="@{/admin/metodo-pago}" method="post" enctype="multipart/form-data" class="admin-form">
+            
+            <div class="form-group">
+                <label for="banco">🏦 Banco:</label>
+                <input type="text" id="banco" name="banco" th:value="${metodoPago.banco}" 
+                       placeholder="BBVA, Banco de Bogotá, etc." required>
+            </div>
+
+            <div class="form-group">
+                <label for="tipoCuenta">📋 Tipo de Cuenta:</label>
+                <select id="tipoCuenta" name="tipoCuenta" required>
+                    <option value="" th:selected="${metodoPago.tipoCuenta == null}">Seleccionar...</option>
+                    <option value="AHORROS" th:selected="${metodoPago.tipoCuenta == 'AHORROS'}">Ahorros</option>
+                    <option value="CORRIENTE" th:selected="${metodoPago.tipoCuenta == 'CORRIENTE'}">Corriente</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="numeroCuenta">🔢 Número de Cuenta:</label>
+                <input type="text" id="numeroCuenta" name="numeroCuenta" th:value="${metodoPago.numeroCuenta}" 
+                       placeholder="1234567890" required>
+            </div>
+
+            <div class="form-group">
+                <label for="nombreTitular">👤 Nombre del Titular:</label>
+                <input type="text" id="nombreTitular" name="nombreTitular" th:value="${metodoPago.nombreTitular}" 
+                       placeholder="Nombre completo" required>
+            </div>
+
+            <div class="form-group">
+                <label for="qrFile">📷 QR de Pago (imagen):</label>
+                <input type="file" id="qrFile" name="qrFile" accept="image/*">
+                <div th:if="${metodoPago.qrUrl}" class="current-image">
+                    <p>Imagen actual:</p>
+                    <img th:src="${metodoPago.qrUrl.startsWith('/') ? metodoPago.qrUrl : '/' + metodoPago.qrUrl}" 
+                         style="max-width: 150px;">
+                </div>
+            </div>
+
+            <button type="submit" class="btn-primary">💾 Guardar</button>
+        </form>
+    </main>
+
+    <div th:replace="~{fragmentos/footer :: footer}"></div>
+
+</body>
+</html>

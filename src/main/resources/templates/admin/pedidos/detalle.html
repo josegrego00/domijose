@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pedido #<span th:text="${pedido.id}"></span> | DomiJose</title>
+    <link rel="stylesheet" th:href="@{/css/marketplace.css}">
+</head>
+<body>
+
+    <div th:replace="~{fragmentos/header :: header}"></div>
+
+    <div class="container">
+        <h2>📋 Pedido #<span th:text="${pedido.id}"></span></h2>
+
+        <div th:if="${success}" class="alert alert success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+        <div th:if="${whatsappEnviado}" class="alert alert success" th:text="${whatsappEnviado}"></div>
+
+        <div class="order-status">
+            <p>Estado: <strong th:text="${pedido.status}"></strong></p>
+        </div>
+
+        <div class="order-info">
+            <p><strong>Cliente:</strong> <span th:text="${pedido.userFullName}"></span></p>
+            <p><strong>Teléfono:</strong> <span th:text="${pedido.userPhone}"></span></p>
+            <p><strong>Fecha:</strong> <span th:text="${#temporals.format(pedido.orderDate, 'dd/MM/yyyy HH:mm')}"></span></p>
+            <p><strong>Método de pago:</strong> <span th:text="${pedido.metodoPago}"></span></p>
+        </div>
+
+        <h3>Productos</h3>
+        <div th:each="item : ${pedido.items}" class="order-item">
+            <span th:text="${item.productName}"></span>
+            <span>x<span th:text="${item.quantity}"></span></span>
+            <span>$<span th:text="${#numbers.formatDecimal(item.subtotal, 1, 2)}"></span></span>
+        </div>
+
+        <div class="order-total">
+            <strong>Total: $<span th:text="${#numbers.formatDecimal(pedido.totalAmount, 1, 2)}"></span></strong>
+        </div>
+
+        <!-- BOTÓN ÚNICO: Confirmar y Notificar (solo para POR_CONFIRMAR) -->
+        <div class="order-actions" th:if="${pedido.status.name() == 'POR_CONFIRMAR'}">
+            <form th:action="@{/admin/pedidos/{id}/confirmar(id=${pedido.id})}" method="post">
+                <button type="submit" class="btn-form btn-confirmar">
+                    ✓ Confirmar y Notificar
+                </button>
+            </form>
+        </div>
+
+        <!-- WHATSAPP: Siempre visible después de confirmar (para cualquier estado excepto POR_CONFIRMAR) -->
+        <div class="whatsapp-section" th:if="${pedido.status.name() != 'POR_CONFIRMAR'}">
+            <h3>📱 Notificaciones WhatsApp</h3>
+            
+            <!-- Botón para enviar al restaurante -->
+            <a th:href="${whatsappAdminLink}" target="_blank" class="btn-form btn-whatsapp">
+                📱 Enviar al Restaurante
+            </a>
+            
+            <!-- Enlace para el cliente con botón copiar -->
+            <div class="cliente-link-section">
+                <p><strong>Enlace para el cliente:</strong></p>
+                <div class="link-copy-box">
+                    <input type="text" th:value="${whatsappClienteLink}" readonly class="link-input" id="clienteLink">
+                    <button type="button" class="btn-copy" onclick="copiarEnlace()">
+                        📋 Copiar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Acciones de estado -->
+        <div class="order-actions" th:if="${pedido.status.name() == 'CONFIRMADO'}">
+            <form th:action="@{/admin/pedidos/{id}/preparacion(id=${pedido.id})}" method="post">
+                <button type="submit" class="btn-form">🍳 Iniciar Preparación</button>
+            </form>
+        </div>
+
+        <div class="order-actions" th:if="${pedido.status.name() == 'EN_PREPARACION'}">
+            <form th:action="@{/admin/pedidos/{id}/en-camino(id=${pedido.id})}" method="post">
+                <button type="submit" class="btn-form">🚗 Enviar a Domicilio</button>
+            </form>
+        </div>
+
+        <div class="order-actions" th:if="${pedido.status.name() == 'EN_CAMINO'}">
+            <form th:action="@{/admin/pedidos/{id}/entregado(id=${pedido.id})}" method="post">
+                <button type="submit" class="btn-form">✅ Confirmar Entrega</button>
+            </form>
+        </div>
+
+        <a th:href="@{/admin/pedidos}" class="btn-form btn-form-secondary">📋 Volver a Pedidos</a>
+        <a th:href="@{/}" class="btn-form btn-form-secondary">🏠 Inicio</a>
+    </div>
+
+    <div th:replace="~{fragmentos/footer :: footer}"></div>
+
+    <script>
+    function copiarEnlace() {
+        var input = document.getElementById('clienteLink');
+        input.select();
+        input.setSelectionRange(0, 99999);
+        
+        navigator.clipboard.writeText(input.value).then(function() {
+            alert('Enlace copiado al portapapeles');
+        }, function(err) {
+            console.error('Error al copiar: ', err);
+        });
+    }
+    </script>
+
+</body>
+</html>

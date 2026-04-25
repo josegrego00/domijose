@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <header class="header" th:fragment="header">
+        <div class="header-content">
+            <a href="/" class="logo">🍕 DomiJose</a>
+            
+            <button class="hamburger" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <nav class="nav-menu" id="navMenu">
+                <ul class="nav-links">
+                    <li><a href="/productos">Productos</a></li>
+                    <li sec:authorize="hasRole('CLIENTE')">
+                        <a href="/pedidos/mis-pedidos">Mis Pedidos</a>
+                    </li>
+                    
+                    <li sec:authorize="hasRole('ADMIN')" class="admin-link">
+                        <a href="/admin/productos">📦 Productos</a>
+                    </li>
+                    <li sec:authorize="hasRole('ADMIN')" class="admin-link">
+                        <a href="/admin/metodo-pago">💳 Métodos de Pago</a>
+                    </li>
+                    <li sec:authorize="hasRole('ADMIN')" class="admin-link">
+                        <a href="/admin/pedidos">📋 Pedidos</a>
+                    </li>
+                    
+                    <li sec:authorize="isAuthenticated()">
+                        <a href="/carrito">🛒 <span id="cart-count">0</span></a>
+                    </li>
+                    <li sec:authorize="isAuthenticated()">
+                        <form th:action="@{/logout}" method="post">
+                            <button type="submit" class="logout-btn">Cerrar Sesión</button>
+                        </form>
+                    </li>
+                    <li sec:authorize="!isAuthenticated()">
+                        <a href="/login">Iniciar Sesión</a>
+                    </li>
+                    <li sec:authorize="!isAuthenticated()">
+                        <a href="/registro">Registrarse</a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="nav-overlay" onclick="toggleMenu()"></div>
+        </div>
+        
+        <script>
+        function toggleMenu() {
+            document.getElementById('navMenu').classList.toggle('active');
+            document.querySelector('.nav-overlay').classList.toggle('active');
+            document.querySelector('.hamburger').classList.toggle('active');
+        }
+        </script>
+    </header>
+</body>
+</html>

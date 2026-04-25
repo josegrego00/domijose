@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+
+    <div th:fragment="product-card(producto)" class="product-card">
+        <a th:href="@{/productos/{id}(id=${producto.id})}" class="product-image-link">
+            <div class="product-image-container">
+                <img th:src="${producto.imageUrl != null && !producto.imageUrl.startsWith('/') ? '/' + producto.imageUrl : producto.imageUrl}"
+                     class="product-image" 
+                     th:alt="${producto.name}"
+                     loading="lazy">
+            </div>
+            <div class="product-info">
+                <div class="product-name" th:text="${producto.name}">🍗 Pollo Broaster</div>
+                <div class="product-description" th:text="${producto.description}">Crujiente por fuera, jugoso por dentro</div>
+                <div class="product-price">
+                    <span class="currency">$</span>
+                    <span th:text="${#numbers.formatDecimal(producto.price, 1, 2)}">0.00</span>
+                </div>
+                <div class="product-stock-badge" th:if="${producto.stock} > 0">
+                    <span class="badge-stock">✅ En stock</span>
+                </div>
+                <div class="product-stock-badge" th:unless="${producto.stock} > 0">
+                    <span class="badge-out">❌ Agotado</span>
+                </div>
+                <button class="btn-add-cart-small" 
+                        th:if="${producto.stock} > 0"
+                        th:attr="data-id=${producto.id}"
+                        onclick="agregarAlCarrito(this)">
+                    🛒 Agregar
+                </button>
+            </div>
+        </a>
+    </div>
+
+    <script>
+        function agregarAlCarrito(button) {
+            const productId = button.getAttribute('data-id');
+            fetch('/carrito/agregar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'productId=' + productId + '&quantity=1'
+            })
+            .then(response => {
+                if(response.redirected) {
+                    window.location.href = response.url;
+                } else {
+                    const cartCount = document.getElementById('cart-count');
+                    if(cartCount) {
+                        let count = parseInt(cartCount.innerText) || 0;
+                        cartCount.innerText = count + 1;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Menú - DomiJose</title>
+    <link rel="stylesheet" th:href="@{/css/marketplace.css}">
+</head>
+<body>
+
+    <div th:replace="~{fragmentos/header :: header}"></div>
+
+    <main class="container">
+        <!-- Header del menú -->
+        <div class="menu-header">
+            <h1>🍽️ Nuestro Menú</h1>
+            <p class="subtitle">Platos preparados con amor y los mejores ingredientes</p>
+        </div>
+
+        <!-- Mensajes flash -->
+        <div th:if="${param.success}" class="alert-success">
+            ✅ ¡Producto agregado al carrito!
+        </div>
+        <div th:if="${param.error}" class="alert-error">
+            ❌ Error al agregar producto
+        </div>
+        <div th:if="${param.stockError}" class="alert-error">
+            ❌ Stock insuficiente
+        </div>
+
+        <!-- Buscador -->
+        <form th:action="@{/productos/buscar}" method="get" class="search-box">
+            <input type="text" name="q" th:value="${busqueda}" placeholder="🔍 Buscar por nombre..." class="search-input">
+            <button type="submit" class="btn-secondary">Buscar</button>
+        </form>
+
+        <!-- Grid de productos -->
+        <div class="grid" th:if="${not #lists.isEmpty(productos)}">
+            <div th:each="producto : ${productos}" 
+                 th:insert="~{fragmentos/product-card :: product-card(producto=${producto})}">
+            </div>
+        </div>
+
+        <!-- Estado vacío -->
+        <div class="empty-state" th:if="${#lists.isEmpty(productos)}">
+            <div class="empty-icon">🍕</div>
+            <p th:if="${busqueda}">No encontramos "<span th:text="${busqueda}"></span>"</p>
+            <p th:unless="${busqueda}">Pronto tendremos nuevos platillos</p>
+            <a th:href="@{/productos}" class="btn-secondary" th:if="${busqueda}">Ver todo el menú</a>
+        </div>
+    </main>
+
+    <div th:replace="~{fragmentos/footer :: footer}"></div>
+
+</body>
+</html>

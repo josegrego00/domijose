@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nueva Cuenta | DomiJose</title>
+    <link rel="stylesheet" th:href="@{/css/marketplace.css}">
+</head>
+<body>
+
+    <div th:replace="~{fragmentos/header :: header}"></div>
+
+    <div class="container">
+        <div class="form-container">
+            <h2>🏦 Nueva Cuenta Bancaria</h2>
+
+            <form th:action="@{/admin/metodo-pago/cuenta}" th:object="${metodoPago}" method="post">
+                <div class="form-group">
+                    <label for="banco">Banco:</label>
+                    <input type="text" id="banco" th:field="*{banco}" required placeholder="Ej: Banco de Bogotá">
+                </div>
+
+                <div class="form-group">
+                    <label for="tipoCuenta">Tipo de Cuenta:</label>
+                    <select id="tipoCuenta" th:field="*{tipoCuenta}" required>
+                        <option value="">Seleccionar</option>
+                        <option value="Ahorros">Ahorros</option>
+                        <option value="Corriente">Corriente</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="numeroCuenta">Número de Cuenta:</label>
+                    <input type="text" id="numeroCuenta" th:field="*{numeroCuenta}" required placeholder="1234567890">
+                </div>
+
+                <div class="form-group">
+                    <label for="nombreTitular">Nombre del Titular:</label>
+                    <input type="text" id="nombreTitular" th:field="*{nombreTitular}" required placeholder="Juan Pérez">
+                </div>
+
+                <button type="submit" class="btn-form">💾 Guardar Cuenta</button>
+                <a th:href="@{/admin/metodo-pago}" class="btn-form btn-form-secondary">❌ Cancelar</a>
+            </form>
+        </div>
+    </div>
+
+    <div th:replace="~{fragmentos/footer :: footer}"></div>
+
+</body>
+</html>

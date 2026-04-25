@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title th:text="${producto.name} + ' - DomiJose'">Detalle producto - DomiJose</title>
+    <link rel="stylesheet" th:href="@{/css/marketplace.css}">
+</head>
+<body>
+
+    <div th:replace="~{fragmentos/header :: header}"></div>
+
+    <main class="container">
+        <!-- Botón volver -->
+        <a th:href="@{/productos}" class="back-link">← Volver al menú</a>
+        
+        <!-- Detalle del producto -->
+        <div class="detail-container">
+            <!-- Imagen -->
+            <div class="detail-image-wrapper">
+                <img th:if="${producto.imageUrl}" 
+                     th:src="${producto.imageUrl.startsWith('/') ? producto.imageUrl : '/' + producto.imageUrl}" 
+                     class="detail-image" 
+                     th:alt="${producto.name}">
+                <img th:unless="${producto.imageUrl}" 
+                     th:src="@{/images/placeholder-food.png}" 
+                     class="detail-image" 
+                     alt="Producto sin imagen">
+            </div>
+            
+            <!-- Información -->
+            <div class="detail-info">
+                <h1 class="detail-name" th:text="${producto.name}">Nombre</h1>
+                
+                <div class="detail-price">
+                    $<span th:text="${#numbers.formatDecimal(producto.price, 1, 2)}">0</span>
+                </div>
+                
+                <p class="detail-description" th:text="${producto.description}">Descripción</p>
+                
+                <!-- Stock -->
+                <div th:if="${producto.stock > 0}" class="stock-info stock-available">
+                    ✓ Disponible · <span th:text="${producto.stock}"></span> unidades
+                </div>
+                <div th:if="${producto.stock == 0}" class="stock-info stock-soldout">
+                    ✗ Agotado
+                </div>
+                
+                <!-- Formulario para agregar al carrito -->
+                <form th:action="@{/carrito/agregar}" method="post" th:if="${producto.stock > 0}">
+                    <input type="hidden" name="productId" th:value="${producto.id}">
+                    
+                    <!-- Selector de cantidad (solo si hay stock) -->
+                    <div class="quantity-selector" th:if="${producto.stock > 0}">
+                        <button type="button" class="qty-btn" onclick="updateQuantity(this, -1)" th:disabled="${producto.stock == 0}">-</button>
+                        <input type="number" name="quantity" id="quantity" value="1" min="1" th:max="${producto.stock}" class="qty-input">
+                        <button type="button" class="qty-btn" onclick="updateQuantity(this, 1)" th:disabled="${producto.stock == 0}">+</button>
+                    </div>
+                    
+                    <!-- Botón para autenticados -->
+                    <button type="submit" class="btn-primary" sec:authorize="isAuthenticated()" th:disabled="${producto.stock == 0}">
+                        🛒 Agregar al carrito
+                    </button>
+                    
+                    <!-- Botón para no autenticados -->
+                    <a th:href="@{/login}" class="btn-primary" sec:authorize="isAnonymous()">
+                        🔒 Iniciar sesión para comprar
+                    </a>
+                </form>
+                
+                <!-- Mensaje cuando está agotado -->
+                <div th:if="${producto.stock == 0}" class="alert-error">
+                    Producto agotado temporalmente
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragmentos/footer :: footer}"></div>
+
+    <script>
+        function updateQuantity(btn, delta) {
+            const input = btn.parentElement.querySelector('.qty-input');
+            let newValue = parseInt(input.value) + delta;
+            const min = parseInt(input.min) || 1;
+            const max = parseInt(input.max);
+            
+            if (newValue < min) newValue = min;
+            if (max && newValue > max) newValue = max;
+            
+            input.value = newValue;
+        }
+        
+        // Validar que no exceda el stock
+        document.querySelector('.qty-input')?.addEventListener('change', function(e) {
+            const max = parseInt(this.max);
+            const value = parseInt(this.value);
+            if (value > max) {
+                this.value = max;
+            }
+            if (value < 1) {
+                this.value = 1;
+            }
+        });
+    </script>
+</body>
+</html>

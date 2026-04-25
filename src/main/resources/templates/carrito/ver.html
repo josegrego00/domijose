@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mi Carrito - DomiJose</title>
+    <link rel="stylesheet" th:href="@{/css/marketplace.css}">
+    <link rel="stylesheet" th:href="@{/css/carrito.css}">
+</head>
+<body>
+
+    <div th:replace="~{fragmentos/header :: header}"></div>
+
+    <main class="container">
+        <h1 class="page-title">🛒 Mi Carrito</h1>
+
+        <!-- Mensajes flash -->
+        <div th:if="${param.updated}" class="alert-success">
+            ✅ Cantidad actualizada
+        </div>
+        <div th:if="${param.removed}" class="alert-success">
+            🗑️ Producto eliminado del carrito
+        </div>
+        <div th:if="${param.error}" class="alert-error">
+            ❌ Error al procesar el carrito
+        </div>
+        <div th:if="${param.stockError}" class="alert-error">
+            ❌ Lo sentimos, no hay suficiente stock disponible
+        </div>
+
+        <!-- Carrito con productos -->
+        <div th:if="${not #lists.isEmpty(carrito)}" class="cart-container">
+            
+            <!-- Lista de productos -->
+            <div class="cart-items">
+                <div th:each="item : ${carrito}" class="cart-item">
+                    <div class="cart-item-image">
+                        <img th:if="${item.productImage}" 
+                             th:src="${item.productImage.startsWith('/') ? item.productImage : '/' + item.productImage}" 
+                             th:alt="${item.productName}">
+                        <img th:unless="${item.productImage}" 
+                             th:src="@{/images/placeholder-food.png}" 
+                             th:alt="Producto">
+                    </div>
+                    
+                    <div class="cart-item-details">
+                        <h3 class="cart-item-name" th:text="${item.productName}">Producto</h3>
+                        <p class="cart-item-price">$<span th:text="${#numbers.formatDecimal(item.price, 1, 2)}"></span> c/u</p>
+                        
+                        <div class="cart-item-actions">
+                            <form th:action="@{/carrito/actualizar}" method="post" class="update-form">
+                                <input type="hidden" name="productId" th:value="${item.productId}">
+                                <div class="quantity-control">
+                                    <button type="submit" name="quantity" th:value="${item.quantity - 1}" 
+                                            class="qty-mini" th:unless="${item.quantity <= 1}">-</button>
+                                    <span class="quantity-display" th:text="${item.quantity}">1</span>
+                                    <button type="submit" name="quantity" th:value="${item.quantity + 1}" 
+                                            class="qty-mini">+</button>
+                                </div>
+                            </form>
+                            
+                            <form th:action="@{/carrito/eliminar}" method="post" class="remove-form">
+                                <input type="hidden" name="productId" th:value="${item.productId}">
+                                <button type="submit" class="btn-remove">🗑️ Eliminar</button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div class="cart-item-subtotal">
+                        <div class="subtotal-label">Subtotal</div>
+                        <div class="subtotal-value">$<span th:text="${#numbers.formatDecimal(item.subtotal, 1, 2)}"></span></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Resumen del pedido -->
+            <div class="cart-summary">
+                <h2 class="summary-title">Resumen del pedido</h2>
+                
+                <div class="summary-row">
+                    <span>Subtotal:</span>
+                    <span>$<span id="subtotal" th:text="${#numbers.formatDecimal(total, 1, 2)}">0</span></span>
+                </div>
+                
+                <div class="summary-row">
+                    <span>Envío:</span>
+                    <span class="free-shipping">¡Gratis!</span>
+                </div>
+                
+                <div class="summary-divider"></div>
+                
+                <div class="summary-row total">
+                    <span>Total:</span>
+                    <span>$<span id="total" th:text="${#numbers.formatDecimal(total, 1, 2)}">0</span></span>
+                </div>
+                
+                <!-- Selección de método de pago -->
+                <div class="payment-methods">
+                    <h3 class="payment-title">💳 Método de pago</h3>
+                    
+                    <label class="payment-option">
+                        <input type="radio" name="metodoPago" value="EFECTIVO" checked>
+                        <span class="option-label">💵 Efectivo</span>
+                    </label>
+                    
+                    <label class="payment-option">
+                        <input type="radio" name="metodoPago" value="TRANSFERENCIA">
+                        <span class="option-label">📱 Transferencia</span>
+                    </label>
+                    
+                    <label class="payment-option">
+                        <input type="radio" name="metodoPago" value="DATAFONO">
+                        <span class="option-label">💳 Datafono</span>
+                    </label>
+                    
+                    <!-- Datos de transferencia -->
+                    <div class="transferencia-details" style="display: none;" id="transferenciaDetails">
+                        <div class="bank-info" th:each="cuenta : ${cuentas}">
+                            <p><strong>Banco:</strong> <span th:text="${cuenta.banco}"></span></p>
+                            <p><strong>Tipo:</strong> <span th:text="${cuenta.tipoCuenta}"></span></p>
+                            <p><strong>Cuenta:</strong> <span th:text="${cuenta.numeroCuenta}"></span></p>
+                            <p><strong>Titular:</strong> <span th:text="${cuenta.nombreTitular}"></span></p>
+                        </div>
+                        <div class="qr-image" th:each="qr : ${qrs}">
+                            <img th:src="${'/' + qr.qrUrl}" alt="QR Pago" style="max-width: 200px;">
+                        </div>
+                    </div>
+                </div>
+                
+                <form th:action="@{/carrito/checkout}" method="post" class="checkout-form">
+                    <input type="hidden" name="metodoPago" id="metodoPagoInput" value="EFECTIVO">
+                    <button type="submit" class="btn-primary btn-checkout" th:disabled="${#lists.isEmpty(carrito)}">
+                        🍽️ Realizar pedido
+                    </button>
+                </form>
+                
+                <a th:href="@{/productos}" class="btn-secondary continue-shopping">
+                    ← Seguir agregando productos
+                </a>
+            </div>
+        </div>
+        
+        <!-- Carrito vacío -->
+        <div th:if="${#lists.isEmpty(carrito)}" class="empty-cart">
+            <div class="empty-cart-icon">🛒</div>
+            <h2>Tu carrito está vacío</h2>
+            <p>¡Explora nuestro menú y agrega tus platillos favoritos!</p>
+            <a th:href="@{/productos}" class="btn-primary">Ver menú</a>
+        </div>
+        
+        <!-- Productos sugeridos (opcional) -->
+        <div th:if="${not #lists.isEmpty(productosSugeridos)}" class="suggestions">
+            <h3 class="suggestions-title">🍕 Quizás también te guste</h3>
+            <div class="suggestions-grid">
+                <div th:each="producto : ${productosSugeridos}" 
+                     th:insert="~{fragmentos/product-card :: product-card(producto=${producto})}">
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragmentos/footer :: footer}"></div>
+
+    <script>
+    document.querySelectorAll('input[name="metodoPago"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            document.getElementById('metodoPagoInput').value = this.value;
+            var detalles = document.getElementById('transferenciaDetails');
+            if (detalles) {
+                detalles.style.display = (this.value === 'TRANSFERENCIA') ? 'block' : 'none';
+            }
+        });
+    });
+    </script>
+
+</body>
+</html>

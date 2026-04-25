@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DomiJose - Tu restaurante en casa</title>
+    <link rel="stylesheet" th:href="@{/css/marketplace.css}">
+</head>
+
+<body>
+
+    <div th:replace="~{fragmentos/header :: header}"></div>
+
+    <section class="hero">
+        <h1>Tu restaurante</h1>
+        <p>a tu puerta</p>
+        <a th:href="@{/productos}" class="btn-hero">Ver menú</a>
+    </section>
+
+    <div class="container">
+        <div class="section-header">
+            <h2>Productos destacados</h2>
+            <a th:href="@{/productos}">Ver todos →</a>
+        </div>
+
+        <div class="carrusel-container" th:if="${not #lists.isEmpty(productos)}">
+            <div class="carrusel-wrapper">
+                <div class="carrusel-track">
+                    <div th:each="producto : ${productos}" class="carrusel-item">
+                        <div th:insert="~{fragmentos/product-card :: product-card(producto=${producto})}"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="carrusel-indicators"></div>
+            <button class="carrusel-btn prev" aria-label="Anterior">❮</button>
+            <button class="carrusel-btn next" aria-label="Siguiente">❯</button>
+        </div>
+        
+        <div class="empty-state" th:if="${#lists.isEmpty(productos)}">
+            <p>No hay productos disponibles</p>
+        </div>
+    </div>
+
+    <div th:replace="~{fragmentos/footer :: footer}"></div>
+
+    <script th:src="@{/js/carrusel.js}"></script>
+
+</body>
+
+</html>
