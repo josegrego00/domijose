@@ -9,12 +9,17 @@
 <body>
     <div class="container">
         <div class="register-card">
+<<<<<<< HEAD
             <div class="icon-circle">🍗</div>
+=======
+            <div class="icon-circle">🛒</div>
+>>>>>>> 895f7048ce66841e31fae2226ff1405bccaed273
             
             <h2>Crear Cuenta</h2>
             
             <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
             
+<<<<<<< HEAD
             <form th:action="@{/registro}" th:object="${userDTO}" method="post">
                 <div class="form-group">
                     <input type="tel" 
@@ -24,6 +29,15 @@
                            autocomplete="tel"
                            pattern="[0-9]{10,}"
                            title="Ingresa 10 dígitos"
+=======
+            <form th:action="@{/registro}" th:object="${userRequest}" method="post">
+                <div class="form-group">
+                    <input type="email" 
+                           th:field="*{email}" 
+                           class="form-control" 
+                           placeholder="Correo electrónico"
+                           autocomplete="email"
+>>>>>>> 895f7048ce66841e31fae2226ff1405bccaed273
                            required>
                 </div>
                 
@@ -37,11 +51,22 @@
                 </div>
                 
                 <div class="form-group">
+<<<<<<< HEAD
                     <input type="email" 
                            th:field="*{email}" 
                            class="form-control" 
                            placeholder="Correo electrónico (opcional)"
                            autocomplete="email">
+=======
+                    <input type="tel" 
+                           th:field="*{phone}" 
+                           class="form-control" 
+                           placeholder="Número de teléfono"
+                           autocomplete="tel"
+                           pattern="[0-9]{10,}"
+                           title="Ingresa 10 dígitos"
+                           required>
+>>>>>>> 895f7048ce66841e31fae2226ff1405bccaed273
                 </div>
                 
                 <div class="form-group">
@@ -59,7 +84,11 @@
                     ¿Ya tienes cuenta? Inicia sesión
                 </a>
                 
+<<<<<<< HEAD
                 <a th:href="@{/}" class="back-link">← Volver al inicio</a>
+=======
+                <a th:href="@{/}" class="login-link">← Volver al inicio</a>
+>>>>>>> 895f7048ce66841e31fae2226ff1405bccaed273
             </form>
         </div>
     </div>

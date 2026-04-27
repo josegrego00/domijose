@@ -12,11 +12,16 @@
 
     <div class="container">
         <div class="section-header">
+<<<<<<< HEAD
             <h1>🍗 Gestión de Productos</h1>
+=======
+            <h1>📦 Gestión de Productos</h1>
+>>>>>>> 895f7048ce66841e31fae2226ff1405bccaed273
             <a th:href="@{/admin/productos/nuevo}" class="btn-new">➕ Nuevo Producto</a>
         </div>
 
         <div th:if="${param.success}" class="alert alert-success">
+<<<<<<< HEAD
             🎉 Producto creado exitosamente
         </div>
 
@@ -34,6 +39,25 @@
 
         <div th:if="${param.error}" class="alert alert-error">
             ⚠️ Error: Producto no encontrado
+=======
+            Producto creado exitosamente
+        </div>
+
+        <div th:if="${param.updated}" class="alert alert-success">
+            Producto actualizado exitosamente
+        </div>
+
+        <div th:if="${param.deleted}" class="alert alert-success">
+            Producto desactivado exitosamente
+        </div>
+
+        <div th:if="${param.activated}" class="alert alert-success">
+            Producto activado exitosamente
+        </div>
+
+        <div th:if="${param.error}" class="alert alert-error">
+            Error: Producto no encontrado
+>>>>>>> 895f7048ce66841e31fae2226ff1405bccaed273
         </div>
 
         <div class="table-responsive">
@@ -52,6 +76,7 @@
                 <tbody>
                     <tr th:each="producto : ${productos}">
                         <td th:text="${producto.id}">1</td>
+<<<<<<< HEAD
                         <td>
                             <span class="product-name-admin" th:text="${producto.name}">Producto</span>
                         </td>
@@ -63,10 +88,20 @@
                         <td>
                             <span th:if="${producto.available}" class="badge badge-active">🟢 Activo</span>
                             <span th:unless="${producto.available}" class="badge badge-inactive">🔴 Inactivo</span>
+=======
+                        <td th:text="${producto.name}">Producto</td>
+                        <td>$ <span th:text="${#numbers.formatDecimal(producto.price, 0, 'COMMA', 0, 'POINT')}">0</span></td>
+                        <td th:text="${producto.stock}">10</td>
+                        <td th:text="${producto.category}">Lácteos</td>
+                        <td>
+                            <span th:if="${producto.available}" class="badge badge-active">Activo</span>
+                            <span th:unless="${producto.available}" class="badge badge-inactive">Inactivo</span>
+>>>>>>> 895f7048ce66841e31fae2226ff1405bccaed273
                         </td>
                         <td class="actions">
                             <a th:href="@{/admin/productos/editar/{id}(id=${producto.id})}" class="btn-edit">✏️ Editar</a>
                             <span th:if="${producto.available}">
+<<<<<<< HEAD
                                 <a th:href="@{/admin/productos/desactivar/{id}(id=${producto.id})}" 
                                    class="btn-delete" 
                                    onclick="return confirm('¿Desactivar el producto ${producto.name}?')">🗑️ Desactivar</a>
@@ -75,14 +110,24 @@
                                 <a th:href="@{/admin/productos/activar/{id}(id=${producto.id})}" 
                                    class="btn-activate"
                                    onclick="return confirm('¿Activar el producto ${producto.name}?')">✅ Activar</a>
+=======
+                                <a th:href="@{/admin/productos/desactivar/{id}(id=${producto.id})}" class="btn-delete" onclick="return confirm('¿Desactivar este producto?')">🗑️ Desactivar</a>
+                            </span>
+                            <span th:unless="${producto.available}">
+                                <a th:href="@{/admin/productos/activar/{id}(id=${producto.id})}" class="btn-activate">✅ Activar</a>
+>>>>>>> 895f7048ce66841e31fae2226ff1405bccaed273
                             </span>
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(productos)}">
                         <td colspan="7" class="empty-state">
+<<<<<<< HEAD
                             📦 No hay productos registrados
                             <br>
                             <a th:href="@{/admin/productos/nuevo}" class="btn-new" style="display: inline-block; margin-top: 16px;">➕ Crear primer producto</a>
+=======
+                            No hay productos registrados
+>>>>>>> 895f7048ce66841e31fae2226ff1405bccaed273
                         </td>
                     </tr>
                 </tbody>

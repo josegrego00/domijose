@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<<<<<<< HEAD
     <title th:text="${productDTO.id != null ? 'Editar Producto' : 'Nuevo Producto'}">Producto | DomiJose</title>
+=======
+    <title th:text="${producto.id != null ? 'Editar Producto' : 'Nuevo Producto'}">Producto | DomiJose</title>
+>>>>>>> 895f7048ce66841e31fae2226ff1405bccaed273
     <link rel="stylesheet" th:href="@{/css/marketplace.css}">
 </head>
 <body>
@@ -12,6 +16,7 @@
 
     <div class="container">
         <div class="form-container">
+<<<<<<< HEAD
             <h2 th:text="${productDTO.id != null ? '✏️ Editar Producto' : '➕ Nuevo Producto'}">Nuevo Producto</h2>
 
             <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
@@ -22,11 +27,22 @@
                   method="post" 
                   enctype="multipart/form-data">
                 
+=======
+            <h2 th:text="${producto.id != null ? '✏️ Editar Producto' : '➕ Nuevo Producto'}">Nuevo Producto</h2>
+
+            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+            <form th:action="${producto.id != null ? '/admin/productos/actualizar' : '/admin/productos/guardar'}" th:object="${producto}" method="post" enctype="multipart/form-data">
+>>>>>>> 895f7048ce66841e31fae2226ff1405bccaed273
                 <input type="hidden" th:field="*{id}">
 
                 <div class="form-group">
                     <label for="name">Nombre del Producto:</label>
+<<<<<<< HEAD
                     <input type="text" id="name" th:field="*{name}" required placeholder="Ej: 🍗 Pollo Broaster">
+=======
+                    <input type="text" id="name" th:field="*{name}" required placeholder="Ej: Leche Entera 1L">
+>>>>>>> 895f7048ce66841e31fae2226ff1405bccaed273
                 </div>
 
                 <div class="form-group">
@@ -48,6 +64,7 @@
                     <label for="category">Categoría:</label>
                     <select id="category" th:field="*{category}">
                         <option value="">Seleccionar categoría</option>
+<<<<<<< HEAD
                         <option value="Entradas">🍟 Entradas</option>
                         <option value="Pollo">🍗 Pollo</option>
                         <option value="Hamburguesas">🍔 Hamburguesas</option>
@@ -55,6 +72,16 @@
                         <option value="Bebidas">🥤 Bebidas</option>
                         <option value="Postres">🍰 Postres</option>
                         <option value="Combos">🍽️ Combos</option>
+=======
+                        <option value="Lácteos">🥛 Lácteos</option>
+                        <option value="Despensa">🥫 Despensa</option>
+                        <option value="Frutas">🍎 Frutas</option>
+                        <option value="Verduras">🥬 Verduras</option>
+                        <option value="Bebidas">🥤 Bebidas</option>
+                        <option value="Limpieza">🧹 Limpieza</option>
+                        <option value="Panadería">🍞 Panadería</option>
+                        <option value="Carnes">🥩 Carnes</option>
+>>>>>>> 895f7048ce66841e31fae2226ff1405bccaed273
                         <option value="Otros">📦 Otros</option>
                     </select>
                 </div>
@@ -70,6 +97,7 @@
                     </div>
                     <div class="image-preview" id="previewContainer" style="display: none;">
                         <img id="previewImagen" style="max-width: 150px; border-radius: 8px;">
+<<<<<<< HEAD
                         <p style="color: #FF8C42; font-size: 12px; margin-top: 4px;">📸 Vista previa</p>
                     </div>
                     <div th:if="${productDTO.imageUrl}" class="current-image" style="margin-top: 12px;">
@@ -83,11 +111,30 @@
                     <select id="available" th:field="*{available}">
                         <option th:value="true" th:selected="${productDTO.available == true}">🟢 Activo</option>
                         <option th:value="false" th:selected="${productDTO.available == false}">🔴 Inactivo</option>
+=======
+                        <p style="color: #666; font-size: 12px; margin-top: 4px;">Vista previa</p>
+                    </div>
+                    <div th:if="${producto.imageUrl}" class="current-image" style="margin-top: 12px;">
+                        <img th:src="@{${producto.imageUrl}}" style="max-width: 150px; border-radius: 8px;">
+                        <p style="color: #666; font-size: 12px;">Imagen actual</p>
+                    </div>
+                </div>
+
+                <div class="form-group" th:if="${producto.id != null}">
+                    <label for="available">Estado:</label>
+                    <select id="available" th:field="*{available}">
+                        <option th:value="true" th:selected="${producto.available == true}">Activo</option>
+                        <option th:value="false" th:selected="${producto.available == false}">Inactivo</option>
+>>>>>>> 895f7048ce66841e31fae2226ff1405bccaed273
                     </select>
                 </div>
 
                 <button type="submit" class="btn-form">💾 Guardar Producto</button>
+<<<<<<< HEAD
                 <a th:href="@{/admin/productos}" class="btn-form btn-form-secondary">❌ Cancelar</a>
+=======
+                <a th:href="@{/admin/productos}" class="btn-form btn-form-secondary">Cancelar</a>
+>>>>>>> 895f7048ce66841e31fae2226ff1405bccaed273
             </form>
         </div>
     </div>

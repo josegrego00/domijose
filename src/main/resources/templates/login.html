@@ -9,18 +9,27 @@
 <body>
     <div class="container">
         <div class="login-card">
+<<<<<<< HEAD
             <div class="icon-circle">🍗</div>
+=======
+            <div class="icon-circle">🛒</div>
+>>>>>>> 895f7048ce66841e31fae2226ff1405bccaed273
             
             <h2>Bienvenido</h2>
             
             <div th:if="${param.error}" class="alert alert-error">
+<<<<<<< HEAD
                 Teléfono o contraseña incorrectos
+=======
+                Correo o contraseña incorrectos
+>>>>>>> 895f7048ce66841e31fae2226ff1405bccaed273
             </div>
             
             <div th:if="${param.logout}" class="alert alert-success">
                 Sesión cerrada correctamente
             </div>
             
+<<<<<<< HEAD
             <div th:if="${param.registered}" class="alert alert-success">
                 Registro exitoso. Por favor, inicia sesión.
             </div>
@@ -34,6 +43,15 @@
                            autocomplete="tel"
                            pattern="[0-9]{10,}"
                            title="Ingresa 10 dígitos"
+=======
+            <form th:action="@{/login}" method="post">
+                <div class="form-group">
+                    <input type="email" 
+                           name="username" 
+                           class="form-control" 
+                           placeholder="Correo electrónico"
+                           autocomplete="email"
+>>>>>>> 895f7048ce66841e31fae2226ff1405bccaed273
                            required>
                 </div>
                 
