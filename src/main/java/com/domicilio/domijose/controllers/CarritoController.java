@@ -3,7 +3,7 @@ package com.domicilio.domijose.controllers;
 import com.domicilio.domijose.dto.OrderDTO;
 import com.domicilio.domijose.dto.OrderItemDTO;
 import com.domicilio.domijose.services.CarritoService;
-import com.domicilio.domijose.services.CustomUserDetails;
+import com.domicilio.domijose.services.security.CustomUserDetails;
 import com.domicilio.domijose.services.MetodoPagoService;
 import com.domicilio.domijose.services.OrderService;
 import org.slf4j.Logger;

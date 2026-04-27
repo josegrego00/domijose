@@ -13,10 +13,15 @@ import com.domicilio.domijose.repositories.ProductRepository;
 import com.domicilio.domijose.repositories.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -47,6 +52,16 @@ public class OrderService {
         return orderMapper.toDtoList(orders);
     }
 
+    public List<OrderDTO> getOrdersByUserIdAndDateRange(Long userId, LocalDate fecha) {
+        LocalDateTime startOfDay = fecha.atStartOfDay();
+        LocalDateTime endOfDay = fecha.atTime(LocalTime.MAX);
+        log.debug("Obteniendo pedidos para usuario ID: {} en fecha: {}", userId, fecha);
+        List<Order> orders = orderRepository.findByUserIdAndOrderDateBetweenAndStatusNotOrderByOrderDateDesc(
+                userId, startOfDay, endOfDay, OrderStatus.CANCELADO);
+        log.debug("Pedidos encontrados para fecha {}: {}", fecha, orders.size());
+        return orderMapper.toDtoList(orders);
+    }
+
     public OrderDTO getOrderByIdAndUserId(Long orderId, Long userId) {
         log.debug("Buscando pedido ID: {} para usuario ID: {}", orderId, userId);
         return orderRepository.findByIdAndUserId(orderId, userId)
@@ -67,6 +82,14 @@ public class OrderService {
     public List<OrderDTO> getAllOrders() {
         log.debug("Obteniendo todos los pedidos");
         return orderMapper.toDtoList(orderRepository.findAll());
+    }
+
+    public Page<OrderDTO> getOrdersByDateWithPagination(LocalDate fecha, Pageable pageable) {
+        LocalDateTime startOfDay = fecha.atStartOfDay();
+        LocalDateTime endOfDay = fecha.atTime(LocalTime.MAX);
+        log.debug("Obteniendo pedidos para fecha: {} con paginación", fecha);
+        Page<Order> ordersPage = orderRepository.findByOrderDateBetweenOrderByOrderDateDesc(startOfDay, endOfDay, pageable);
+        return ordersPage.map(orderMapper::toDto);
     }
 
     @Transactional

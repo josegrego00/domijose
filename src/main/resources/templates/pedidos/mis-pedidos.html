@@ -20,6 +20,12 @@
             <span th:text="${param.error}"></span>
         </div>
 
+        <form th:action="@{/pedidos/mis-pedidos}" method="get" class="filter-form">
+            <label for="fecha">Filtrar por fecha:</label>
+            <input type="date" id="fecha" name="fecha" th:value="${fechaFiltro}">
+            <button type="submit" class="btn-buscar">🔍 Buscar</button>
+        </form>
+
         <div th:if="${#lists.isEmpty(pedidos)}" class="empty-state">
             <div class="empty-icon">📦</div>
             <p>No tienes pedidos aún</p>
@@ -48,8 +54,8 @@
                 </div>
                 
                 <div class="order-actions">
-                    <a th:href="@{/pedidos/{id}(id=${pedido.id})}" class="btn-secondary">
-                        👁️ Ver Detalle
+                    <a th:href="@{/pedidos/{id}(id=${pedido.id})}" class="btn-ver-pedido">
+                        Ver Mi Pedido
                     </a>
                 </div>
             </div>

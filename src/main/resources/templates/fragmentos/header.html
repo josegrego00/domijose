@@ -16,27 +16,30 @@
 
             <nav class="nav-menu" id="navMenu">
                 <ul class="nav-links">
-                    <li><a href="/productos">Productos</a></li>
+                    <li><a href="/productos">📖 Productos</a></li>
                     <li sec:authorize="hasRole('CLIENTE')">
-                        <a href="/pedidos/mis-pedidos">Mis Pedidos</a>
+                        <a href="/pedidos/mis-pedidos">📦 Mis Pedidos</a>
                     </li>
                     
                     <li sec:authorize="hasRole('ADMIN')" class="admin-link">
-                        <a href="/admin/productos">📦 Productos</a>
+                        <a href="/admin/productos">📦 Gestion de Productos</a>
                     </li>
                     <li sec:authorize="hasRole('ADMIN')" class="admin-link">
-                        <a href="/admin/metodo-pago">💳 Métodos de Pago</a>
+                        <a href="/admin/metodo-pago">💳 Gestionar Métodos de Pago</a>
                     </li>
                     <li sec:authorize="hasRole('ADMIN')" class="admin-link">
-                        <a href="/admin/pedidos">📋 Pedidos</a>
+                        <a href="/admin/pedidos">
+                            📋 Gestionar Pedidos
+                            <span th:if="${pedidosPendientesAdmin > 0}" class="badge-pendientes" th:text="${pedidosPendientesAdmin}"></span>
+                        </a>
                     </li>
                     
-                    <li sec:authorize="isAuthenticated()">
-                        <a href="/carrito">🛒 <span id="cart-count">0</span></a>
+<li sec:authorize="hasRole('CLIENTE')">
+                        <a href="/carrito">🛒 <span id="cart-count" th:text="${carritoCount}">0</span></a>
                     </li>
                     <li sec:authorize="isAuthenticated()">
                         <form th:action="@{/logout}" method="post">
-                            <button type="submit" class="logout-btn">Cerrar Sesión</button>
+                            <button type="submit" class="logout-btn">➡️ Cerrar Sesión</button>
                         </form>
                     </li>
                     <li sec:authorize="!isAuthenticated()">

@@ -1,6 +1,6 @@
 package com.domicilio.domijose.config;
 
-import com.domicilio.domijose.services.CustomUserDetailsService;
+import com.domicilio.domijose.services.security.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,7 +27,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/productos/**", "/carrito/**", "/registro", "/login", "/css/**",
-                                "/js/**", "/images/**", "/admin/metodo-pago/**", "/admin/pedidos/**")
+                                "/js/**", "/images/**")
                         .permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())

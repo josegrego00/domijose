@@ -1,4 +1,4 @@
-package com.domicilio.domijose.services;
+package com.domicilio.domijose.services.security;
 
 import com.domicilio.domijose.models.User;
 import com.domicilio.domijose.repositories.UserRepository;

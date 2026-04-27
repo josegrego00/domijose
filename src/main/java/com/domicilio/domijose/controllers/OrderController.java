@@ -2,17 +2,19 @@ package com.domicilio.domijose.controllers;
 
 import com.domicilio.domijose.dto.OrderDTO;
 import com.domicilio.domijose.dto.OrderItemDTO;
-import com.domicilio.domijose.services.CustomUserDetails;
+import com.domicilio.domijose.services.security.CustomUserDetails;
 import com.domicilio.domijose.services.OrderService;
 import com.domicilio.domijose.services.WhatsAppLinkService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Controller
@@ -29,14 +31,19 @@ public class OrderController {
     }
 
     @GetMapping("/mis-pedidos")
-    public String myOrders(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public String myOrders(Model model,
+                            @AuthenticationPrincipal CustomUserDetails userDetails,
+                            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
         if (userDetails == null) {
             return "redirect:/login";
         }
-        
-        log.info("Cargando pedidos para usuario: {}", userDetails.getPhone());
-        List<OrderDTO> orders = orderService.getOrdersByUserId(userDetails.getUser().getId());
+
+        LocalDate fechaFiltro = (fecha != null) ? fecha : LocalDate.now();
+        log.info("Cargando pedidos para usuario: {} con fecha: {}", userDetails.getPhone(), fechaFiltro);
+
+        List<OrderDTO> orders = orderService.getOrdersByUserIdAndDateRange(userDetails.getUser().getId(), fechaFiltro);
         model.addAttribute("pedidos", orders);
+        model.addAttribute("fechaFiltro", fechaFiltro);
         return "pedidos/mis-pedidos";
     }
 

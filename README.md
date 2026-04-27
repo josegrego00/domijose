@@ -5,15 +5,19 @@ Aplicación web para gestión de pedidos a domicilio (delivery) desarrollada con
 ## 🚀 Características
 
 - **Gestión de productos**: CRUD completo de productos con upload de imágenes
-- **Gestión de pedidos**: Estados completos PENDIENTE → CONFIRMADO → EN_PREPARACION → EN_CAMINO → ENTREGADO
+- **Gestión de pedidos**: Estados completos POR_CONFIRMAR → CONFIRMADO → EN_PREPARACION → EN_CAMINO → ENTREGADO
 - **Métodos de pago**: Admin puede configurar cuentas bancarias y códigos QR
 - **Opciones de pago**: Cliente selecciona EFECTIVO, TRANSFERENCIA o DATAFONO
-- **Notificaciones WhatsApp**: Botón unificado para confirmar y notificar al restaurante
+- **Notificaciones WhatsApp**: Botón para enviar al cliente vía wa.me
 - **Autenticación**: Registro e inicio de sesión con Spring Security
 - **Roles**: CLIENTE (hacer pedidos) y ADMIN (gestionar menú y pedidos)
 - **Diseño Mobile-First**: Interfaz responsiva con menú hamburguesa
 - **Estilo Minimalista**: CSS personalizado con paleta verde manzana
 - **Logging**: Registro de sesiones de usuarios
+- **Badge Carrito**: Conteo real de productos en el header (solo CLIENTE)
+- **Badge Pedidos Pendientes**: Conteo de pedidos POR_CONFIRMAR en panel admin
+- **Filtro por fecha**: Vista de pedidos filtrada por día
+- **Paginación**: 10 pedidos por página en admin
 
 ## 🛠️ Tech Stack
 

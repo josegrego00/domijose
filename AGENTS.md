@@ -198,8 +198,29 @@ src/main/java/com/domicilio/domijose/
 
 ### Módulo WhatsApp (Notificaciones wa.me)
 - **Service**: `WhatsAppLinkService` genera enlaces wa.me
-- **Admin**: Botón único "✓ Confirmar y Notificar" → abre WhatsApp con mensaje pre-llenado
+- **Admin**: Botón "📱 Enviar al Cliente" → abre WhatsApp con mensaje pre-llenado
 - **Cliente**: Recibe enlace copiable para compartir por WhatsApp
 - Configuración en `application.properties`:
   - `admin.whatsapp.number` - Número del administrador
-  - `base.url` - URL base de la прилож
+  - `base.url` - URL base de la app
+
+### Módulo Carrito (Header)
+- **CarritoInterceptor**: Agrega `carritoCount` al modelo en cada request (para todos los usuarios)
+- **WebConfig**: Registra interceptores globalmente
+- **Header**: Badge del carrito visible solo para CLIENTE (`sec:authorize="hasRole('CLIENTE')"`)
+
+### Módulo Admin - Badge Pedidos Pendientes
+- **AdminPedidosInterceptor**: Consulta pedidos `POR_CONFIRMAR` y agrega `pedidosPendientesAdmin` al modelo
+- Solo se ejecuta en rutas `/admin/**`
+- **Header**: Badge rojo con contador visible junto a "📋 Gestionar Pedidos" (solo ADMIN)
+
+### Filtro de Fecha en Pedidos
+- **CLIENTE** (`/pedidos/mis-pedidos`):
+  - Por defecto muestra pedidos del día actual
+  - Filtro por fecha con formulario y botón "🔍 Buscar"
+  - Método: `getOrdersByUserIdAndDateRange(userId, fecha)`
+- **ADMIN** (`/admin/pedidos`):
+  - Por defecto muestra pedidos del día actual
+  - Filtro por fecha con formulario
+  - Paginación: 10 pedidos por página
+  - Método: `getOrdersByDateWithPagination(fecha, pageable)`

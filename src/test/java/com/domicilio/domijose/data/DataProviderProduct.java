@@ -67,4 +67,16 @@ public class DataProviderProduct {
         product.setName(name);
         return product;
     }
+
+    public static ProductDTO createProductDTO2() {
+        ProductDTO dto = new ProductDTO();
+        dto.setId(2L);
+        dto.setName("Test Product 2");
+        dto.setDescription("Test Description 2");
+        dto.setPrice(new BigDecimal("30.00"));
+        dto.setStock(5);
+        dto.setAvailable(true);
+        dto.setCategory("POSTRE");
+        return dto;
+    }
 }

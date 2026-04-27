@@ -16,11 +16,17 @@
         <div th:if="${success}" class="alert alert success" th:text="${success}"></div>
         <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
 
-        <div th:if="${pedidos.empty}" class="empty-state">
-            <p>No hay pedidos</p>
+        <form th:action="@{/admin/pedidos}" method="get" class="filter-form">
+            <label for="fecha">Filtrar por fecha:</label>
+            <input type="date" id="fecha" name="fecha" th:value="${fechaFiltro}">
+            <button type="submit" class="btn-buscar">🔍 Buscar</button>
+        </form>
+
+        <div th:if="${pedidosPage.empty}" class="empty-state">
+            <p>No hay pedidos para esta fecha</p>
         </div>
 
-        <div th:each="pedido : ${pedidos}" class="card-item">
+        <div th:each="pedido : ${pedidosPage.content}" class="card-item">
             <div class="card-info">
                 <strong>Pedido #<span th:text="${pedido.id}"></span></strong>
                 <p>Cliente: <span th:text="${pedido.userFullName}"></span></p>
@@ -29,6 +35,18 @@
                 <p th:text="${#temporals.format(pedido.orderDate, 'dd/MM/yyyy HH:mm')}"></p>
             </div>
             <a th:href="@{/admin/pedidos/{id}(id=${pedido.id})}" class="btn-form">Ver</a>
+        </div>
+
+        <div class="pagination" th:if="${pedidosPage.totalPages > 1}">
+            <a th:if="${currentPage > 0}"
+               th:href="@{/admin/pedidos(page=${currentPage - 1}, fecha=${fechaFiltro})}"
+               class="btn-pagination">◀ Anterior</a>
+
+            <span class="page-info">Página <span th:text="${currentPage + 1}"></span> de <span th:text="${pedidosPage.totalPages}"></span></span>
+
+            <a th:if="${currentPage < pedidosPage.totalPages - 1}"
+               th:href="@{/admin/pedidos(page=${currentPage + 1}, fecha=${fechaFiltro})}"
+               class="btn-pagination">Siguiente ▶</a>
         </div>
 
         <a th:href="@{/}" class="btn-form btn-form-secondary">🏠 Inicio</a>
