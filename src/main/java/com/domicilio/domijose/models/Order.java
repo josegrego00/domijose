@@ -49,41 +49,4 @@ public class Order {
             totalAmount = BigDecimal.ZERO;
         }
     }
-    
-    // Métodos de negocio
-    public void addItem(OrderItem item) {
-        items.add(item);
-        item.setOrder(this);
-        calculateTotal();
-    }
-    
-    public void removeItem(OrderItem item) {
-        items.remove(item);
-        item.setOrder(null);
-        calculateTotal();
-    }
-    
-    public void calculateTotal() {
-        this.totalAmount = items.stream()
-                .map(OrderItem::getSubtotal)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-    
-    public boolean canBeCancelled() {
-        return status == OrderStatus.POR_CONFIRMAR;
-    }
-    
-    public void cancel() {
-        if (!canBeCancelled()) {
-            throw new IllegalStateException("Solo se pueden cancelar pedidos por confirmar");
-        }
-        this.status = OrderStatus.CANCELADO;
-    }
-    
-    public void deliver() {
-        if (status != OrderStatus.EN_CAMINO) {
-            throw new IllegalStateException("Solo se pueden entregar pedidos en camino");
-        }
-        this.status = OrderStatus.ENTREGADO;
-    }
 }

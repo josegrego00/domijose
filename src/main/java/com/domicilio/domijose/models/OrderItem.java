@@ -30,12 +30,4 @@ public class OrderItem {
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
-
-    @PrePersist
-    @PreUpdate
-    public void calculateSubtotal() {
-        if (quantity != null && unitPrice != null) {
-            this.subtotal = unitPrice.multiply(BigDecimal.valueOf(quantity));
-        }
-    }
 }

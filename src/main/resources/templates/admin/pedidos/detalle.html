@@ -52,10 +52,21 @@
         <div class="whatsapp-section" th:if="${pedido.status.name() != 'POR_CONFIRMAR'}">
             <h3>📱 Notificaciones WhatsApp</h3>
             
-            <!-- Botón para enviar al cliente -->
-            <a th:href="${whatsappClienteLink}" target="_blank" class="btn-form btn-whatsapp">
-                📱 Enviar al Cliente
+            <!-- Botón para enviar al restaurante -->
+            <a th:href="${whatsappAdminLink}" target="_blank" class="btn-form btn-whatsapp">
+                📱 Enviar al Restaurante
             </a>
+            
+            <!-- Enlace para el cliente con botón copiar -->
+            <div class="cliente-link-section">
+                <p><strong>Enlace para el cliente:</strong></p>
+                <div class="link-copy-box">
+                    <input type="text" th:value="${whatsappClienteLink}" readonly class="link-input" id="clienteLink">
+                    <button type="button" class="btn-copy" onclick="copiarEnlace()">
+                        📋 Copiar
+                    </button>
+                </div>
+            </div>
         </div>
 
         <!-- Acciones de estado -->

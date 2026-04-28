@@ -24,9 +24,8 @@ public class User {
 
     @Column(unique = true, nullable = false)
     private String phone;  // ← Este es el username para login
-
     
-    private String email;  // ← Ahora es opcional (puede ser null)
+    private String email;  // ← Es opcional (puede ser null)
 
     @Column(nullable = false)
     private String password;

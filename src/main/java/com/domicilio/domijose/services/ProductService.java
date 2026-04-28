@@ -141,7 +141,7 @@ public class ProductService {
         return productMapper.toDTOList(products);
     }
 
-    public ProductDTO getProductByIdForAdmin(Long id) {
+public ProductDTO getProductByIdForAdmin(Long id) {
         log.debug("Buscando producto por ID para admin: {}", id);
         return productRepository.findById(id)
                 .map(productMapper::toDTO)
@@ -149,5 +149,27 @@ public class ProductService {
                     log.warn("Producto no encontrado: {}", id);
                     return new IllegalArgumentException("Producto no encontrado");
                 });
+    }
+
+    // ========== MÉTODOS DE NEGOCIO ==========
+
+    public boolean hasStock(Product product, int quantity) {
+        return product.getStock() >= quantity;
+    }
+
+    public void reduceStock(Product product, int quantity) {
+        if (!hasStock(product, quantity)) {
+            log.warn("Stock insuficiente para producto: {}", product.getName());
+            throw new IllegalArgumentException("Stock insuficiente");
+        }
+        product.setStock(product.getStock() - quantity);
+        productRepository.save(product);
+        log.debug("Stock reducido para producto {}: -{}", product.getName(), quantity);
+    }
+
+    public void increaseStock(Product product, int quantity) {
+        product.setStock(product.getStock() + quantity);
+        productRepository.save(product);
+        log.debug("Stock aumentado para producto {}: +{}", product.getName(), quantity);
     }
 }

@@ -33,15 +33,17 @@ public class OrderService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final WhatsAppLinkService whatsAppLinkService;
+    private final ProductService productService;
 
     public OrderService(OrderRepository orderRepository, OrderMapper orderMapper,
             UserRepository userRepository, ProductRepository productRepository,
-            WhatsAppLinkService whatsAppLinkService) {
+            WhatsAppLinkService whatsAppLinkService, ProductService productService) {
         this.orderRepository = orderRepository;
         this.orderMapper = orderMapper;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.whatsAppLinkService = whatsAppLinkService;
+        this.productService = productService;
     }
 
     public List<OrderDTO> getOrdersByUserId(Long userId) {
@@ -114,22 +116,22 @@ public class OrderService {
                             () -> new IllegalArgumentException("Producto no encontrado: " + itemDTO.getProductId()));
 
             // Validar stock
-            if (!product.hasStock(itemDTO.getQuantity())) {
+            if (!productService.hasStock(product, itemDTO.getQuantity())) {
                 throw new IllegalStateException("Stock insuficiente para: " + product.getName());
             }
 
             // Reducir stock
-            product.reduceStock(itemDTO.getQuantity());
-            productRepository.save(product);
+            productService.reduceStock(product, itemDTO.getQuantity());
 
             // Crear OrderItem
             OrderItem orderItem = new OrderItem();
             orderItem.setProduct(product);
             orderItem.setQuantity(itemDTO.getQuantity());
             orderItem.setUnitPrice(product.getPrice()); // Snapshot del precio actual
-            orderItem.calculateSubtotal(); // Calcula subtotal
+            orderItem.setSubtotal(product.getPrice().multiply(BigDecimal.valueOf(itemDTO.getQuantity())));
 
-            order.addItem(orderItem);
+            order.getItems().add(orderItem);
+            orderItem.setOrder(order);
             totalAmount = totalAmount.add(orderItem.getSubtotal());
         }
 
@@ -152,21 +154,20 @@ public class OrderService {
                     return new IllegalArgumentException("Pedido no encontrado");
                 });
 
-        // Regla: Solo cancelar si está CONFIRMADO (antes de EN_CAMINO)
-        if (!order.canBeCancelled()) {
+        // Regla: Solo cancelar si está POR_CONFIRMAR
+        if (order.getStatus() != OrderStatus.POR_CONFIRMAR) {
             log.warn("No se puede cancelar pedido con estado: {}", order.getStatus());
-            throw new IllegalStateException("Solo se pueden cancelar pedidos confirmados");
+            throw new IllegalStateException("Solo se pueden cancelar pedidos por confirmar");
         }
 
         // Restaurar stock de los productos
         for (OrderItem item : order.getItems()) {
             Product product = item.getProduct();
-            product.increaseStock(item.getQuantity());
-            productRepository.save(product);
+            productService.increaseStock(product, item.getQuantity());
             log.debug("Stock restaurado para producto: {} (+{})", product.getName(), item.getQuantity());
         }
 
-        order.cancel(); // Usar método de negocio
+        order.setStatus(OrderStatus.CANCELADO);
         orderRepository.save(order);
         log.info("Pedido cancelado: {}", orderId);
     }
@@ -179,9 +180,15 @@ public class OrderService {
                 .orElseThrow(() -> new IllegalArgumentException("Pedido no encontrado"));
 
         if (newStatus == OrderStatus.ENTREGADO) {
-            order.deliver();
+            if (order.getStatus() != OrderStatus.EN_CAMINO) {
+                throw new IllegalStateException("Solo se pueden entregar pedidos en camino");
+            }
+            order.setStatus(OrderStatus.ENTREGADO);
         } else if (newStatus == OrderStatus.CANCELADO) {
-            order.cancel();
+            if (order.getStatus() != OrderStatus.POR_CONFIRMAR) {
+                throw new IllegalStateException("Solo se pueden cancelar pedidos por confirmar");
+            }
+            order.setStatus(OrderStatus.CANCELADO);
         } else {
             order.setStatus(newStatus);
         }

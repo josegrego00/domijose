@@ -42,23 +42,4 @@ public class Product {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
-    
-    // Método de negocio: validar stock disponible
-    public boolean hasStock(int quantity) {
-        return stock >= quantity;
-    }
-    
-    // Método de negocio: reducir stock
-    public void reduceStock(int quantity) {
-        if (hasStock(quantity)) {
-            this.stock -= quantity;
-        } else {
-            throw new IllegalArgumentException("Stock insuficiente");
-        }
-    }
-    
-    // Método de negocio: aumentar stock
-    public void increaseStock(int quantity) {
-        this.stock += quantity;
-    }
 }
