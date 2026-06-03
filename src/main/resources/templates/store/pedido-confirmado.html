@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${venta.estado.toString() == 'CANCELADA'} ? 'Pedido Cancelado - AppDomirest' : 'Pedido Confirmado - AppDomirest'">Pedido Confirmado - AppDomirest</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/store.css}">
+    <link rel="stylesheet" th:href="@{/css/store-cart.css}">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    <script th:src="@{/js/cliente-websocket.js}"></script>
+</head>
+<body>
+    <div th:replace="~{fragments/store-navbar :: store-navbar}"></div>
+
+    <div class="breadcrumb">
+        <a href="/">Inicio</a>
+        <span>/</span>
+        <a th:href="@{/carrito}">Carrito</a>
+        <span>/</span>
+        <span>Confirmación</span>
+    </div>
+
+    <div class="confirm-container">
+        <div th:if="${venta.estado.toString() == 'CANCELADA'}" class="confirm-header">
+            <div class="confirm-icon" style="background: rgba(232, 90, 90, 0.15); color: var(--error);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+            </div>
+            <h1 class="confirm-title">Pedido Cancelado</h1>
+            <p class="confirm-subtitle">Este pedido fue cancelado</p>
+        </div>
+        <div th:unless="${venta.estado.toString() == 'CANCELADA'}" class="confirm-header">
+            <div class="confirm-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+            </div>
+            <h1 class="confirm-title">¡Pedido Confirmado!</h1>
+            <p class="confirm-subtitle">Tu pedido ha sido registrado exitosamente</p>
+        </div>
+
+        <div class="confirm-order-info">
+            <div class="confirm-order-id">
+                <span class="confirm-label">Pedido #</span>
+                <span class="confirm-value" th:text="${venta.id}">1</span>
+            </div>
+            <div class="confirm-order-date">
+                <span class="confirm-label">Fecha</span>
+                <span class="confirm-value" th:text="${#temporals.format(venta.fecha, 'dd/MM/yyyy HH:mm')}">01/01/2024 12:00</span>
+            </div>
+            <div class="confirm-order-status">
+                <span class="confirm-label">Estado</span>
+                <span class="badge" th:classappend="${'badge-' + venta.estado.toString().toLowerCase()}" th:text="${venta.estado.toString().replace('_', ' ')}">PENDIENTE</span>
+            </div>
+        </div>
+
+        <div class="confirm-section">
+            <h2 class="confirm-section-title">Productos</h2>
+            <div class="table-wrapper">
+                <table class="confirm-table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Observaciones</th>
+                            <th>Precio Unitario</th>
+                            <th>Cantidad</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="detalle : ${venta.detalles}">
+                            <td>
+                                <div class="confirm-product">
+                                    <img th:if="${detalle.productoImagenUrl}" th:src="${detalle.productoImagenUrl}" alt="" class="confirm-product-image" onerror="this.style.display='none'">
+                                    <span class="confirm-product-name" th:text="${detalle.productoNombre}">Producto</span>
+                                </div>
+                            </td>
+                            <td class="confirm-obs">
+                                <span th:if="${detalle.observacion}" class="confirm-obs-text" th:text="${detalle.observacion}"></span>
+                                <span th:unless="${detalle.observacion}" class="confirm-obs-empty">—</span>
+                            </td>
+                            <td class="confirm-price" th:text="'$' + ${#numbers.formatDecimal(detalle.precioUnitario, 1, 'COMMA', 0, 'POINT')}">$0</td>
+                            <td class="confirm-qty" th:text="${detalle.cantidad}">1</td>
+                            <td class="confirm-price" th:text="'$' + ${#numbers.formatDecimal(detalle.subtotal, 1, 'COMMA', 0, 'POINT')}">$0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="confirm-totals">
+            <div class="confirm-total-row">
+                <span class="confirm-total-label">Subtotal Productos</span>
+                <span class="confirm-total-value" th:text="'$' + ${#numbers.formatDecimal(venta.subtotal, 1, 'COMMA', 0, 'POINT')}">$0</span>
+            </div>
+            <div class="confirm-total-row" th:if="${venta.esDomicilio}">
+                <span class="confirm-total-label">Total Domicilio <span th:if="${venta.rutaNombre}" th:text="'(' + ${venta.rutaNombre} + ')'"></span></span>
+                <span class="confirm-total-value" th:text="'$' + ${#numbers.formatDecimal(venta.costoDomicilio, 1, 'COMMA', 0, 'POINT')}">$0</span>
+            </div>
+            <div class="confirm-total-divider"></div>
+            <div class="confirm-total-row confirm-total-final">
+                <span class="confirm-total-label">Total a Pagar</span>
+                <span class="confirm-total-amount" th:text="'$' + ${#numbers.formatDecimal(venta.total, 1, 'COMMA', 0, 'POINT')}">$0</span>
+            </div>
+        </div>
+
+        <div class="confirm-delivery" th:if="${venta.esDomicilio and venta.direccion != null and venta.direccion != ''}">
+            <div class="confirm-delivery-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                <span>Dirección de Envío</span>
+            </div>
+            <p class="confirm-delivery-text" th:text="${venta.direccion}">Dirección</p>
+            <p class="confirm-delivery-text" th:if="${venta.rutaNombre}" th:text="${venta.rutaNombre}">Barrio</p>
+        </div>
+
+        <div class="confirm-payment" th:if="${venta.metodoPago}">
+            <div class="confirm-delivery-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                    <path d="M12 9v6"/>
+                    <path d="M16 11v2"/>
+                    <path d="M8 11v2"/>
+                </svg>
+                <span>Método de Pago</span>
+            </div>
+            <div class="confirm-payment-info">
+                <div class="confirm-payment-row">
+                    <span class="confirm-label">Método</span>
+                    <span class="confirm-value" th:text="${venta.metodoPago.toString()}">EFECTIVO</span>
+                </div>
+                <div class="confirm-payment-row" th:if="${venta.efectivoRecibido}">
+                    <span class="confirm-label">Efectivo recibido</span>
+                    <span class="confirm-value" th:text="'$' + ${#numbers.formatDecimal(venta.efectivoRecibido, 1, 'COMMA', 0, 'POINT')}">$0</span>
+                </div>
+                <div class="confirm-payment-row" th:if="${venta.efectivoCambio != null and venta.efectivoCambio > 0}">
+                    <span class="confirm-label">Cambio</span>
+                    <span class="confirm-value" style="color: var(--accent);" th:text="'$' + ${#numbers.formatDecimal(venta.efectivoCambio, 1, 'COMMA', 0, 'POINT')}">$0</span>
+                </div>
+                <div class="confirm-payment-row" th:if="${venta.montoTransferencia != null and venta.montoTransferencia > 0}">
+                    <span class="confirm-label">Transferencia</span>
+                    <span class="confirm-value" th:text="'$' + ${#numbers.formatDecimal(venta.montoTransferencia, 1, 'COMMA', 0, 'POINT')}">$0</span>
+                </div>
+                <div class="confirm-payment-row" th:if="${venta.cuentaBancoNombre}">
+                    <span class="confirm-label">Banco</span>
+                    <span class="confirm-value" th:text="${venta.cuentaBancoNombre}">Banco</span>
+                </div>
+                <div class="confirm-payment-row" th:if="${venta.cuentaBancoTipo}">
+                    <span class="confirm-label">Tipo</span>
+                    <span class="confirm-value" th:text="${venta.cuentaBancoTipo}">AHORROS</span>
+                </div>
+                <div class="confirm-payment-row" th:if="${venta.cuentaBancoTitular}">
+                    <span class="confirm-label">Titular</span>
+                    <span class="confirm-value" th:text="${venta.cuentaBancoTitular}">Nombre</span>
+                </div>
+                <div class="confirm-payment-qr" th:if="${venta.cuentaBancoQrUrl}">
+                    <img th:src="${venta.cuentaBancoQrUrl}" alt="QR" class="confirm-qr-img">
+                </div>
+            </div>
+        </div>
+
+        <div class="confirm-actions">
+            <a th:href="@{/catalogo}" class="btn btn-primary btn-lg">Volver al Catálogo</a>
+            <a th:href="@{/mis-pedidos}" class="btn btn-outline btn-lg">Mis Pedidos</a>
+            <form th:if="${venta.estado.toString() == 'PENDIENTE'}"
+                  th:action="@{/pedido/{id}/cancelar(id=${venta.id})}" method="post"
+                  style="display: inline;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <button type="submit" class="btn btn-danger btn-lg"
+                        data-confirm="¿Estás seguro de cancelar este pedido?">Cancelar Pedido</button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2026 AppDomirest. Todos los derechos reservados.</p>
+    </footer>
+</body>
+</html>

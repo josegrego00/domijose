@@ -1,0 +1,70 @@
+<nav th:fragment="store-navbar" class="navbar">
+    <a href="/" class="navbar-brand">AppDomirest</a>
+    <button class="navbar-toggle" id="navbarToggle" aria-label="Menú">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    <div class="navbar-overlay" id="navbarOverlay"></div>
+    <div class="navbar-actions" id="navbarActions">
+        <a th:href="@{/catalogo}" class="nav-link">Catálogo</a>
+        <a sec:authorize="isAuthenticated()" th:href="@{/mis-pedidos}" class="nav-link">Mis Pedidos</a>
+        <a sec:authorize="isAuthenticated()" th:href="@{/carrito}" class="nav-link nav-cart">
+            Carrito <span id="cart-count" class="cart-badge">0</span>
+        </a>
+        <a sec:authorize="!isAuthenticated()" th:href="@{/carrito}" class="nav-link">Carrito</a>
+        <span sec:authorize="isAuthenticated()" class="nav-username" th:text="'Usuario: ' + ${#authentication.name}"></span>
+        <div sec:authorize="!isAuthenticated()">
+            <a th:href="@{/login}" class="btn btn-outline">Iniciar Sesión</a>
+            <a th:href="@{/register}" class="btn btn-primary">Registrarse</a>
+        </div>
+        <div sec:authorize="isAuthenticated()">
+            <form th:action="@{/logout}" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-outline">Cerrar Sesión</button>
+            </form>
+        </div>
+    </div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var toggle = document.getElementById('navbarToggle');
+    var actions = document.getElementById('navbarActions');
+    var overlay = document.getElementById('navbarOverlay');
+
+    function closeMenu() {
+        toggle.classList.remove('active');
+        actions.classList.remove('active');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    function openMenu() {
+        toggle.classList.add('active');
+        actions.classList.add('active');
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    if (toggle) {
+        toggle.addEventListener('click', function() {
+            if (actions.classList.contains('active')) {
+                closeMenu();
+            } else {
+                openMenu();
+            }
+        });
+    }
+
+    if (overlay) {
+        overlay.addEventListener('click', closeMenu);
+    }
+
+    var links = actions ? actions.querySelectorAll('a') : [];
+    links.forEach(function(link) {
+        link.addEventListener('click', closeMenu);
+    });
+});
+</script>
+</nav>
+<div th:replace="~{fragments/confirm-modal :: confirm-modal}"></div>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/store-head :: store-head(title='Mis Pedidos')}"></head>
+<body>
+
+    <nav th:replace="~{fragments/store-navbar :: store-navbar}"></nav>
+
+    <div class="breadcrumb">
+        <a href="/">Inicio</a>
+        <span>/</span>
+        <span>Mis Pedidos</span>
+    </div>
+
+    <div class="orders-page">
+
+        <div class="orders-header">
+            <div class="orders-header-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                </svg>
+            </div>
+            <h1 class="orders-title">Mis <span>Pedidos</span></h1>
+            <p class="orders-subtitle">Historial de tus órdenes realizadas</p>
+        </div>
+
+        <div th:if="${successMessage}" class="success-message">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            <span th:text="${successMessage}"></span>
+        </div>
+
+        <div class="filtros-bar">
+            <a th:href="@{/mis-pedidos(page=0, filtro='todos')}"
+               class="filtro-btn"
+               th:classappend="${filtro == 'todos'} ? 'filtro-btn-active' : ''">Todos</a>
+            <a th:href="@{/mis-pedidos(page=0, filtro='hoy')}"
+               class="filtro-btn"
+               th:classappend="${filtro == 'hoy'} ? 'filtro-btn-active' : ''">Hoy</a>
+        </div>
+
+        <div th:if="${ventas.totalElements == 0}" class="empty-state">
+            <div class="empty-state-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                </svg>
+            </div>
+            <h2>Aún no tienes pedidos</h2>
+            <p th:text="${filtro == 'hoy'} ? 'No realizaste pedidos hoy' : 'Explora nuestro catálogo y realiza tu primer pedido'"></p>
+            <a th:href="@{/catalogo}" class="btn btn-primary">Ver Catálogo</a>
+        </div>
+
+        <div th:if="${ventas.totalElements > 0}" class="orders-list">
+            <div th:each="venta : ${ventas}" class="order-card">
+                <div class="order-header">
+                    <div class="order-header-left">
+                        <div class="order-header-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <span class="order-id" th:text="'Pedido #' + ${venta.id}">Pedido #1</span>
+                            <span class="order-date" th:text="${#temporals.format(venta.fecha, 'dd/MM/yyyy HH:mm')}">01/01/2024 12:00</span>
+                        </div>
+                    </div>
+                    <span class="order-status" th:classappend="${'status-' + venta.estado.toString().toLowerCase()}" th:text="${venta.estado.toString().replace('_', ' ')}">PENDIENTE</span>
+                </div>
+
+                <div class="order-card-body">
+                    <div class="order-card-total">
+                        <span class="total-label">Total pagado</span>
+                        <span class="total-value" th:text="'$' + ${#numbers.formatDecimal(venta.total, 1, 'COMMA', 0, 'POINT')}">$0</span>
+                    </div>
+                </div>
+
+                <div class="order-actions">
+                    <a th:href="@{/pedido/{id}/confirmado(id=${venta.id})}" class="btn-action btn-action-primary">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                        Ver detalle
+                    </a>
+                    <form th:if="${venta.estado.toString() == 'PENDIENTE'}"
+                          th:action="@{/pedido/{id}/cancelar(id=${venta.id})}" method="post"
+                          style="display: inline;">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        <button type="submit" class="btn-action btn-action-danger"
+                                data-confirm="¿Estás seguro de cancelar este pedido?">Cancelar</button>
+                    </form>
+                </div>
+            </div>
+
+            <div th:if="${totalPages > 1}" class="pagination">
+                <a th:if="${currentPage > 0}"
+                   th:href="@{/mis-pedidos(page=${currentPage - 1}, filtro=${filtro})}"
+                   class="pagination-btn">Anterior</a>
+                <span th:if="${currentPage == 0}" class="pagination-btn pagination-btn-disabled">Anterior</span>
+
+                <span class="pagination-info">
+                    Página <strong th:text="${currentPage + 1}">1</strong>
+                    de <strong th:text="${totalPages}">1</strong>
+                </span>
+
+                <a th:if="${currentPage + 1 < totalPages}"
+                   th:href="@{/mis-pedidos(page=${currentPage + 1}, filtro=${filtro})}"
+                   class="pagination-btn">Siguiente</a>
+                <span th:if="${currentPage + 1 >= totalPages}" class="pagination-btn pagination-btn-disabled">Siguiente</span>
+            </div>
+        </div>
+
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2026 AppDomirest. Todos los derechos reservados.</p>
+    </footer>
+</body>
+</html>

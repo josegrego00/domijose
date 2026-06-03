@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-head :: admin-head}"></head>
+
+<body>
+    <div class="admin-wrapper">
+        <header th:replace="~{fragments/admin-header :: admin-header}"></header>
+        <nav th:replace="~{fragments/admin-sidebar :: admin-sidebar}"></nav>
+
+        <main class="admin-main">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Ventas</h1>
+                    <p class="page-subtitle">Gestiona todos los pedidos</p>
+                </div>
+            </div>
+
+            <div class="table-container" style="margin-bottom: 1.5rem;">
+                <form th:action="@{/admin/ventas}" method="get" style="display: flex; gap: 1rem; align-items: center; padding: 1rem;">
+                    <select name="estado" class="form-input" style="width: auto; min-width: 220px;">
+                        <option value="">Todos los estados</option>
+                        <option value="PENDIENTE" th:selected="${estadoFilter == 'PENDIENTE'}">Pendiente</option>
+                        <option value="PEDIDO_TOMADO" th:selected="${estadoFilter == 'PEDIDO_TOMADO'}">Pedido tomado</option>
+                        <option value="ENVIADO" th:selected="${estadoFilter == 'ENVIADO'}">Enviado</option>
+                        <option value="COMPLETADO" th:selected="${estadoFilter == 'COMPLETADO'}">Completado</option>
+                        <option value="CANCELADA" th:selected="${estadoFilter == 'CANCELADA'}">Cancelada</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">Filtrar</button>
+                    <a th:href="@{/admin/ventas}" class="btn btn-secondary">Limpiar</a>
+                </form>
+            </div>
+
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Fecha</th>
+                            <th>Cliente</th>
+                            <th>Teléfono</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="venta : ${ventas.content}">
+                            <td th:text="${venta.id}">1</td>
+                            <td th:text="${#temporals.format(venta.fecha, 'dd/MM/yyyy HH:mm')}">01/01/2024 12:00</td>
+                            <td th:text="${venta.usuarioUsername}">username</td>
+                            <td th:text="${venta.usuarioTelefono}">3001234567</td>
+                            <td th:text="'$' + ${#numbers.formatDecimal(venta.total, 1, 'COMMA', 0, 'POINT')}">$0</td>
+                            <td>
+                                <span class="badge"
+                                      th:classappend="${'badge-' + venta.estado.toString().toLowerCase()}"
+                                      th:text="${venta.estado.toString().replace('_', ' ')}">PENDIENTE</span>
+                            </td>
+                            <td>
+                                <a th:href="@{/admin/ventas/{id}(id=${venta.id})}" class="btn btn-secondary">Ver Detalle</a>
+                            </td>
+                        </tr>
+                        <tr th:if="${ventas.content.isEmpty()}">
+                            <td colspan="7" class="empty-message">No hay ventas registradas</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination" th:if="${ventas.totalPages > 1}">
+                <a th:if="${ventas.hasPrevious()}"
+                   th:href="@{/admin/ventas(page=${ventas.number - 1}, estado=${estadoFilter})}"
+                   class="pagination-btn">Anterior</a>
+                <span class="pagination-info">Página <span th:text="${ventas.number + 1}">1</span> de <span th:text="${ventas.totalPages}">1</span></span>
+                <a th:if="${ventas.hasNext()}"
+                   th:href="@{/admin/ventas(page=${ventas.number + 1}, estado=${estadoFilter})}"
+                   class="pagination-btn">Siguiente</a>
+            </div>
+        </main>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <script th:src="@{/js/admin.js}"></script>
+</body>
+</html>

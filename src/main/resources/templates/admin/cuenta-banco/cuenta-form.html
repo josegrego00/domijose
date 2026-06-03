@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-head :: admin-head}"></head>
+
+<body>
+    <div class="admin-wrapper">
+        <header th:replace="~{fragments/admin-header :: admin-header}"></header>
+        <nav th:replace="~{fragments/admin-sidebar :: admin-sidebar}"></nav>
+
+        <main class="admin-main">
+            <div class="form-container">
+                <div class="form-header">
+                    <h1 class="page-title" th:text="${cuenta.id != null ? 'Editar Cuenta Bancaria' : 'Nueva Cuenta Bancaria'}">Cuenta Bancaria</h1>
+                    <p class="page-subtitle" th:text="${cuenta.id != null ? 'Actualiza los datos de la cuenta' : 'Completa los datos de la nueva cuenta'}">Formulario</p>
+                </div>
+
+                <div th:if="${error}" class="alert alert-error">
+                    <span th:text="${error}">Error message</span>
+                </div>
+
+                <form th:action="${cuenta.id != null} ? @{/admin/cuentas-banco/{id}(id=${cuenta.id})} : @{/admin/cuentas-banco}"
+                      th:object="${cuenta}"
+                      method="post"
+                      enctype="multipart/form-data"
+                      class="ruta-form">
+
+                    <div class="form-section">
+                        <h3 class="section-title">Información Bancaria</h3>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="banco">Nombre del Banco *</label>
+                                <input type="text" id="banco" th:field="*{banco}" class="form-input"
+                                       placeholder="Ej: Bancolombia, Nequi, Davivienda" required>
+                                <span class="error-text" th:if="${#fields.hasErrors('banco')}" th:errors="*{banco}"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="tipoCuenta">Tipo de Cuenta *</label>
+                                <select id="tipoCuenta" th:field="*{tipoCuenta}" class="form-input" required>
+                                    <option value="">Selecciona tipo</option>
+                                    <option value="AHORROS">Ahorros</option>
+                                    <option value="CORRIENTE">Corriente</option>
+                                </select>
+                                <span class="error-text" th:if="${#fields.hasErrors('tipoCuenta')}" th:errors="*{tipoCuenta}"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="numeroCuenta">Número de Cuenta *</label>
+                            <input type="text" id="numeroCuenta" th:field="*{numeroCuenta}" class="form-input"
+                                   placeholder="Ej: 1234567890" required>
+                            <span class="error-text" th:if="${#fields.hasErrors('numeroCuenta')}" th:errors="*{numeroCuenta}"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="titular">Titular de la Cuenta *</label>
+                            <input type="text" id="titular" th:field="*{titular}" class="form-input"
+                                   placeholder="Nombre completo del titular" required>
+                            <span class="error-text" th:if="${#fields.hasErrors('titular')}" th:errors="*{titular}"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 class="section-title">Código QR</h3>
+
+                        <div class="image-upload">
+                            <div class="image-preview" th:if="${cuenta.imagenQrUrl}" id="qrPreview">
+                                <img th:src="${cuenta.imagenQrUrl}" class="preview-img" alt="QR">
+                            </div>
+                            <div class="image-placeholder" th:unless="${cuenta.imagenQrUrl}" id="qrPlaceholder">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                    <polyline points="21 15 16 10 5 21"></polyline>
+                                </svg>
+                                <span class="image-label">Sin imagen QR</span>
+                            </div>
+                            <div class="file-input-wrapper">
+                                <label class="file-label" for="qrFile">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="17 8 12 3 7 8"></polyline>
+                                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                                    </svg>
+                                    Subir QR
+                                </label>
+                                <input type="file" id="qrFile" name="qrFile" class="file-input" accept="image/*">
+                            </div>
+                            <span class="image-label">Formatos: JPEG, PNG, GIF, WebP. Máximo 10MB</span>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <a th:href="@{/admin/cuentas-banco}" class="btn btn-secondary">
+                            Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <span th:text="${cuenta.id != null} ? 'Actualizar Cuenta' : 'Guardar Cuenta'">Guardar</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <script th:src="@{/js/admin.js}"></script>
+    <script>
+        document.getElementById('qrFile')?.addEventListener('change', function(e) {
+            var file = e.target.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function(ev) {
+                    var preview = document.getElementById('qrPreview');
+                    var placeholder = document.getElementById('qrPlaceholder');
+                    if (!preview) {
+                        preview = document.createElement('div');
+                        preview.className = 'image-preview';
+                        preview.id = 'qrPreview';
+                        preview.innerHTML = '<img class="preview-img" alt="QR">';
+                        document.querySelector('.image-upload').insertBefore(preview, document.querySelector('.file-input-wrapper'));
+                    }
+                    if (placeholder) placeholder.style.display = 'none';
+                    preview.querySelector('img').src = ev.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+</html>

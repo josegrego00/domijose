@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-head :: admin-head}"></head>
+
+<body>
+    <div class="admin-wrapper">
+        <header th:replace="~{fragments/admin-header :: admin-header}"></header>
+        <nav th:replace="~{fragments/admin-sidebar :: admin-sidebar}"></nav>
+
+        <main class="admin-main">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title" th:text="'Detalle de Venta #' + ${venta.id}">Detalle de Venta #1</h1>
+                    <p class="page-subtitle">Información completa del pedido</p>
+                </div>
+                <a th:href="@{/admin/ventas}" class="btn btn-secondary">← Volver</a>
+            </div>
+
+            <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+            <div class="stats-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 2rem;">
+                <div class="stat-card">
+                    <h3 style="font-family: 'Playfair Display', serif; color: var(--accent-gold); margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">Información del Cliente</h3>
+                    <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">Usuario</span>
+                        <span style="color: var(--text-primary); font-weight: 500;" th:text="${venta.usuarioUsername}">username</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">Teléfono</span>
+                        <span style="color: var(--text-primary); font-weight: 500;" th:text="${venta.usuarioTelefono}">3001234567</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <h3 style="font-family: 'Playfair Display', serif; color: var(--accent-gold); margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">Estado del Pedido</h3>
+                    <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">Estado</span>
+                        <span class="badge" th:classappend="${'badge-' + venta.estado.toString().toLowerCase()}" th:text="${venta.estado.toString().replace('_', ' ')}">PENDIENTE</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">Fecha</span>
+                        <span style="color: var(--text-primary); font-weight: 500;" th:text="${#temporals.format(venta.fecha, 'dd/MM/yyyy HH:mm')}">01/01/2024 12:00</span>
+                    </div>
+                </div>
+
+                <div class="stat-card" th:if="${venta.esDomicilio}">
+                    <h3 style="font-family: 'Playfair Display', serif; color: var(--accent-gold); margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">Dirección de Entrega</h3>
+                    <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">Barrio</span>
+                        <span style="color: var(--text-primary); font-weight: 500;" th:text="${venta.rutaNombre}">Barrio</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">Costo Domicilio</span>
+                        <span style="color: var(--text-primary); font-weight: 500;" th:text="'$' + ${#numbers.formatDecimal(venta.costoDomicilio, 1, 'COMMA', 0, 'POINT')}">$0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">Dirección</span>
+                        <span style="color: var(--text-primary); font-weight: 500;" th:text="${venta.direccion}">Dirección</span>
+                    </div>
+                </div>
+
+                <div class="stat-card" th:unless="${venta.esDomicilio}">
+                    <h3 style="font-family: 'Playfair Display', serif; color: var(--accent-gold); margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">Tipo de Entrega</h3>
+                    <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">Tipo</span>
+                        <span style="color: var(--accent-fire); font-weight: 600;">Recoger en restaurante</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <h3 style="font-family: 'Playfair Display', serif; color: var(--accent-gold); margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">Totales</h3>
+                    <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">Subtotal</span>
+                        <span style="color: var(--text-primary); font-weight: 500;" th:text="'$' + ${#numbers.formatDecimal(venta.subtotal, 1, 'COMMA', 0, 'POINT')}">$0</span>
+                    </div>
+                    <div th:if="${venta.esDomicilio and venta.costoDomicilio != null}" style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">Costo Domicilio</span>
+                        <span style="color: var(--text-primary); font-weight: 500;" th:text="'$' + ${#numbers.formatDecimal(venta.costoDomicilio, 1, 'COMMA', 0, 'POINT')}">$0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">Total</span>
+                        <span style="color: var(--accent-fire); font-size: 1.25rem; font-weight: 600;" th:text="'$' + ${#numbers.formatDecimal(venta.total, 1, 'COMMA', 0, 'POINT')}">$0</span>
+                    </div>
+                </div>
+
+                <div class="stat-card" th:if="${venta.metodoPago}">
+                    <h3 style="font-family: 'Playfair Display', serif; color: var(--accent-gold); margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">Método de Pago</h3>
+                    <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">Método</span>
+                        <span style="color: var(--text-primary); font-weight: 500;" th:text="${venta.metodoPago.toString()}">EFECTIVO</span>
+                    </div>
+                    <div th:if="${venta.efectivoRecibido}" style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">Efectivo recibido</span>
+                        <span style="color: var(--text-primary); font-weight: 500;" th:text="'$' + ${#numbers.formatDecimal(venta.efectivoRecibido, 1, 'COMMA', 0, 'POINT')}">$0</span>
+                    </div>
+                    <div th:if="${venta.efectivoCambio != null and venta.efectivoCambio > 0}" style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">Cambio</span>
+                        <span style="color: var(--accent-fire); font-weight: 600;" th:text="'$' + ${#numbers.formatDecimal(venta.efectivoCambio, 1, 'COMMA', 0, 'POINT')}">$0</span>
+                    </div>
+                    <div th:if="${venta.montoTransferencia != null and venta.montoTransferencia > 0}" style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">Transferencia</span>
+                        <span style="color: var(--text-primary); font-weight: 500;" th:text="'$' + ${#numbers.formatDecimal(venta.montoTransferencia, 1, 'COMMA', 0, 'POINT')}">$0</span>
+                    </div>
+                    <div th:if="${venta.cuentaBancoNombre}" style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">Banco</span>
+                        <span style="color: var(--text-primary); font-weight: 500;" th:text="${venta.cuentaBancoNombre}">Banco</span>
+                    </div>
+                    <div th:if="${venta.cuentaBancoTipo}" style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">Tipo</span>
+                        <span style="color: var(--text-primary); font-weight: 500;" th:text="${venta.cuentaBancoTipo}">AHORROS</span>
+                    </div>
+                    <div th:if="${venta.cuentaBancoQrUrl}" style="margin-top: 0.75rem; text-align: center;">
+                        <img th:src="${venta.cuentaBancoQrUrl}" alt="QR" style="max-width: 120px; border-radius: 8px;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-container" style="margin-top: 2rem;">
+                <h3 style="font-family: 'Playfair Display', serif; color: var(--accent-gold); padding: 1.25rem 1.5rem 0; margin-bottom: 0;">Productos</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Observaciones</th>
+                            <th>Cantidad</th>
+                            <th>Precio Unitario</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="detalle : ${venta.detalles}">
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 1rem;">
+                                    <div class="product-image">
+                                        <img th:src="${detalle.productoImagenUrl}" onerror="this.style.display='none'">
+                                    </div>
+                                    <span th:text="${detalle.productoNombre}">Producto</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span th:if="${detalle.observacion}" style="color: var(--text-primary); font-size: 1rem; font-weight: 500; font-style: italic;" th:text="${detalle.observacion}"></span>
+                                <span th:unless="${detalle.observacion}" style="color: var(--text-muted);">—</span>
+                            </td>
+                            <td th:text="${detalle.cantidad}">1</td>
+                            <td th:text="'$' + ${#numbers.formatDecimal(detalle.precioUnitario, 1, 'COMMA', 0, 'POINT')}">$0</td>
+                            <td th:text="'$' + ${#numbers.formatDecimal(detalle.subtotal, 1, 'COMMA', 0, 'POINT')}">$0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="action-buttons" style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                <form th:if="${venta.estado.toString() == 'PENDIENTE'}" th:action="@{/admin/ventas/{id}/tomar(id=${venta.id})}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <button type="submit" class="btn btn-primary">Tomar Pedido</button>
+                </form>
+                <form th:if="${venta.estado.toString() == 'PEDIDO_TOMADO'}" th:action="@{/admin/ventas/{id}/enviar(id=${venta.id})}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <button type="submit" class="btn btn-primary">Enviar a Domicilio</button>
+                </form>
+                <form th:if="${venta.estado.toString() == 'ENVIADO'}" th:action="@{/admin/ventas/{id}/completar(id=${venta.id})}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <button type="submit" class="btn btn-success">Completar Pedido</button>
+                </form>
+                <form th:if="${venta.estado.toString() == 'PENDIENTE' or venta.estado.toString() == 'PEDIDO_TOMADO'}" th:action="@{/admin/ventas/{id}/cancelar(id=${venta.id})}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <button type="submit" class="btn btn-danger" data-confirm="¿Estás seguro de cancelar este pedido?">Cancelar Pedido</button>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <script th:src="@{/js/admin.js}"></script>
+</body>
+</html>

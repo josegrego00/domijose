@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/store-head :: store-head(title=producto.nombre)}"></head>
+<body class="body--detail">
+
+    <div th:replace="~{fragments/store-navbar :: store-navbar}"></div>
+
+    <div class="breadcrumb">
+        <a href="/">Inicio</a>
+        <span class="breadcrumb-sep">✦</span>
+        <a th:href="@{/catalogo}">Catálogo</a>
+        <span class="breadcrumb-sep">✦</span>
+        <span th:text="${producto.nombre}">Producto</span>
+    </div>
+
+    <div class="product-detail">
+        <div class="product-gallery">
+            <div class="product-gallery-inner">
+                <div th:if="${producto.imagenUrl}" class="product-img-wrapper">
+                    <img th:src="${producto.imagenUrl}" alt="${producto.nombre}" class="product-image">
+                    <div class="product-img-overlay">
+                        <span class="product-img-brand">AppDomirest</span>
+                        <div class="overlay-content-mobile">
+                            <h1 class="overlay-title" th:text="${producto.nombre}">Nombre Producto</h1>
+                            <div class="overlay-price">
+                                <span th:if="${producto.enPromocion && producto.precioPromocional != null}" class="overlay-price-current" th:text="'$' + ${#numbers.formatDecimal(producto.precioPromocional, 1, 'COMMA', 0, 'POINT')}">$80</span>
+                                <span th:unless="${producto.enPromocion && producto.precioPromocional != null}" class="overlay-price-current" th:text="'$' + ${#numbers.formatDecimal(producto.precioVenta, 1, 'COMMA', 0, 'POINT')}">$100</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div th:unless="${producto.imagenUrl}" class="product-image-placeholder">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                    <span>Sin imagen</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-info-panel">
+            <div class="product-badges" style="--delay: 0s;">
+                <span th:if="${producto.enPromocion}" class="badge badge-promo">EN PROMOCIÓN</span>
+                <span th:if="${producto.disponible}" class="badge badge-stock badge-available">Disponible</span>
+                <span th:unless="${producto.disponible}" class="badge badge-stock badge-low">No Disponible</span>
+            </div>
+
+            <h1 class="product-title panel-title-desktop" style="--delay: 0.1s;" th:text="${producto.nombre}">Nombre del Producto</h1>
+
+            <div class="product-price-group panel-price-desktop" style="--delay: 0.15s;">
+                <div th:if="${producto.enPromocion && producto.precioPromocional != null}" class="product-price-row">
+                    <span class="product-price product-price-current" th:text="'$' + ${#numbers.formatDecimal(producto.precioPromocional, 1, 'COMMA', 0, 'POINT')}">$80</span>
+                    <span class="product-price product-price-old" th:text="'$' + ${#numbers.formatDecimal(producto.precioVenta, 1, 'COMMA', 0, 'POINT')}">$100</span>
+                </div>
+                <div th:unless="${producto.enPromocion && producto.precioPromocional != null}" class="product-price-row">
+                    <span class="product-price product-price-current" th:text="'$' + ${#numbers.formatDecimal(producto.precioVenta, 1, 'COMMA', 0, 'POINT')}">$100</span>
+                </div>
+            </div>
+
+            <div class="product-description" style="--delay: 0.25s;">
+                <div class="product-description-accent"></div>
+                <p th:text="${producto.descripcion}">Descripción completa del producto con todos los detalles que necesitas saber antes de comprar...</p>
+            </div>
+
+            <div class="product-meta-glass" style="--delay: 0.35s;">
+                <div th:if="${producto.disponible}" class="meta-glass-item">
+                    <span class="meta-glass-icon">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                        </svg>
+                    </span>
+                    <span class="meta-glass-label">Presentación</span>
+                    <span class="meta-glass-value">Unidad</span>
+                </div>
+                <div class="meta-glass-item" th:if="${producto.enPromocion}">
+                    <span class="meta-glass-icon" style="color: var(--color-gold);">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                    </span>
+                    <span class="meta-glass-label">Oferta</span>
+                    <span class="meta-glass-value" style="color: var(--color-gold);">Vigente</span>
+                </div>
+            </div>
+
+            <div class="product-observaciones" style="--delay: 0.45s;">
+                <label for="observacion" class="observaciones-label">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                    ¿Alguna indicación especial?
+                </label>
+                <textarea id="observacion" class="observaciones-input"
+                          th:placeholder="${producto.categoria?.name() == 'COMIDA_RAPIDA' ? 'Ej: sin cebolla, sin vegetales' : 
+                              (producto.categoria?.name() == 'BEBIDA' ? 'Ej: unos vasos plásticos' : 
+                              (producto.categoria?.name() == 'CORTES_DE_CARNE' ? 'Ej: cocción 3/4, término medio' :
+                              (producto.categoria?.name() == 'POLLO' ? 'Ej: sin piel, bien cocido' :
+                              (producto.categoria?.name() == 'ENSALADAS' ? 'Ej: sin crutones, aderezo aparte' :
+                              (producto.categoria?.name() == 'ENTRADAS' ? 'Ej: con salsa aparte' :
+                              (producto.categoria?.name() == 'POSTRES' ? 'Ej: sin crema' :
+                              'Ej: sin cebolla, sin salsas, solo con papas...'))))))}"
+                          rows="2"></textarea>
+            </div>
+
+            <div class="product-actions" style="--delay: 0.55s;">
+                <div class="qty-stepper"
+                     th:classappend="${!producto.disponible} ? 'qty-stepper--disabled' : ''">
+                    <button type="button" class="qty-btn qty-minus" onclick="stepperSub(this)">−</button>
+                    <input type="number" id="stepper-qty" class="qty-input" value="1" min="1" readonly>
+                    <button type="button" class="qty-btn qty-plus" onclick="stepperAdd(this)">+</button>
+                </div>
+                <button class="btn-add-cart" th:disabled="${!producto.disponible}"
+                        th:onclick="'agregarAlCarritoConObs(' + ${producto.id} + ')'">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    Agregar al Carrito
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <section th:if="${productosRelacionados != null and not productosRelacionados.isEmpty()}" class="related-section">
+        <h2 class="related-section-title">También te puede gustar</h2>
+        <div class="related-grid">
+            <a th:each="rel : ${productosRelacionados}" th:href="@{/producto/{id}(id=${rel.id})}" class="related-card">
+                <div class="related-card-img">
+                    <img th:if="${rel.imagenUrl}" th:src="${rel.imagenUrl}" alt="${rel.nombre}">
+                    <div th:unless="${rel.imagenUrl}" class="related-card-placeholder">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                    </div>
+                </div>
+                <div class="related-card-info">
+                    <span class="related-card-name" th:text="${rel.nombre}">Producto</span>
+                    <span class="related-card-price" th:text="'$' + ${#numbers.formatDecimal(rel.precioVenta, 1, 'COMMA', 0, 'POINT')}">$0</span>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>&copy; 2026 AppDomirest. Todos los derechos reservados.</p>
+    </footer>
+
+    <script th:src="@{/js/carrito.js}"></script>
+</body>
+</html>

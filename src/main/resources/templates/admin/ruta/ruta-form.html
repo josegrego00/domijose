@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-head :: admin-head}"></head>
+
+<body>
+    <div class="admin-wrapper">
+        <header th:replace="~{fragments/admin-header :: admin-header}"></header>
+        <nav th:replace="~{fragments/admin-sidebar :: admin-sidebar}"></nav>
+
+        <main class="admin-main">
+            <div class="form-container">
+                <div class="form-header">
+                    <h1 class="page-title" th:text="${ruta.id != null ? 'Editar Ruta' : 'Nueva Ruta'}">Ruta</h1>
+                    <p class="page-subtitle" th:text="${ruta.id != null ? 'Actualiza los datos de la ruta' : 'Completa los datos de la nueva ruta'}">Formulario</p>
+                </div>
+
+                <div th:if="${error}" class="alert alert-error">
+                    <span th:text="${error}">Error message</span>
+                </div>
+
+                <form th:action="${ruta.id != null} ? @{/admin/rutas/{id}(id=${ruta.id})} : @{/admin/rutas}"
+                      th:object="${ruta}"
+                      method="post"
+                      class="ruta-form">
+
+                    <div class="form-section">
+                        <h3 class="section-title">Información de la Ruta</h3>
+
+                        <div class="form-group">
+                            <label class="form-label" for="barrio">Nombre del Barrio *</label>
+                            <input type="text" id="barrio" th:field="*{barrio}" class="form-input"
+                                   placeholder="Ej: Barrio Gaitán, El Llano, Centro" required>
+                            <span class="error-text" th:if="${#fields.hasErrors('barrio')}" th:errors="*{barrio}"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="precio">Costo de Domicilio *</label>
+                            <div class="input-icon">
+                                <span class="input-icon-text">$</span>
+                                <input type="number" id="precio" th:field="*{precio}" class="form-input"
+                                       placeholder="5000" step="100" min="0" required>
+                            </div>
+                            <span class="error-text" th:if="${#fields.hasErrors('precio')}" th:errors="*{precio}"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <a th:href="@{/admin/rutas}" class="btn btn-secondary">
+                            Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <span th:text="${ruta.id != null} ? 'Actualizar Ruta' : 'Guardar Ruta'">Guardar</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <script th:src="@{/js/admin.js}"></script>
+</body>
+</html>

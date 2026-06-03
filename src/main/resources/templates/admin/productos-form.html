@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-head :: admin-head}"></head>
+
+<body>
+    <div class="admin-wrapper">
+        <header th:replace="~{fragments/admin-header :: admin-header}"></header>
+        <nav th:replace="~{fragments/admin-sidebar :: admin-sidebar}"></nav>
+
+        <main class="admin-main">
+            <div class="form-container">
+                <div class="form-header">
+                    <h1 class="page-title" th:text="${producto.id != null ? 'Editar Producto' : 'Nuevo Producto'}">Producto</h1>
+                    <p class="page-subtitle" th:text="${producto.id != null ? 'Actualiza los datos del producto' : 'Completa los datos del nuevo producto'}">Formulario</p>
+                </div>
+
+                <div th:if="${error}" class="alert alert-error">
+                    <span th:text="${error}">Error message</span>
+                </div>
+
+                <form th:action="${producto.id != null} ? @{/admin/productos/{id}(id=${producto.id})} : @{/admin/productos}"
+                      th:object="${producto}"
+                      method="post"
+                      enctype="multipart/form-data"
+                      class="product-form">
+
+                    <div class="form-grid">
+                        <div class="form-section">
+                            <h3 class="section-title">Información Basicca</h3>
+
+                            <div class="form-group">
+                                <label class="form-label" for="nombre">Nombre del Producto *</label>
+                                <input type="text" id="nombre" th:field="*{nombre}" class="form-input"
+                                       placeholder="Ingresa el nombre del producto" required>
+                                <span class="error-text" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="codigo">Código *</label>
+                                <input type="text" id="codigo" th:field="*{codigo}" class="form-input"
+                                       placeholder="Ej: PROD-001" required th:disabled="${producto.id != null}">
+                                <span class="error-text" th:if="${#fields.hasErrors('codigo')}" th:errors="*{codigo}"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="descripcion">Descripción</label>
+                                <textarea id="descripcion" th:field="*{descripcion}" class="form-input form-textarea"
+                                          placeholder="Describe las características del producto"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="categoria">Categoría</label>
+                                <select id="categoria" th:field="*{categoria}" class="form-input">
+                                    <option th:each="cat : ${T(com.josepinodev.appdomirest.model.ECategoria).values()}"
+                                            th:value="${cat}" th:text="${cat.name().replace('_', ' ')}"></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3 class="section-title">Inventario</h3>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="stock">Stock Actual</label>
+                                    <input type="number" id="stock" th:field="*{stock}" class="form-input"
+                                           placeholder="0" step="0.01" min="0">
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="stockMinimo">Stock Mínimo</label>
+                                    <input type="number" id="stockMinimo" th:field="*{stockMinimo}" class="form-input"
+                                           placeholder="10" step="0.01" min="0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3 class="section-title">Precios</h3>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="precioCompra">Precio de Compra</label>
+                                    <div class="input-icon">
+                                        <span class="input-icon-text">$</span>
+                                        <input type="number" id="precioCompra" th:field="*{precioCompra}" class="form-input"
+                                               placeholder="0.00" step="0.01" min="0">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="precioVenta">Precio de Venta *</label>
+                                    <div class="input-icon">
+                                        <span class="input-icon-text">$</span>
+                                        <input type="number" id="precioVenta" th:field="*{precioVenta}" class="form-input"
+                                               placeholder="0.00" step="0.01" min="0" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group promo-section">
+                                <div class="checkbox-wrapper">
+                                    <input type="checkbox" id="enPromocion" th:field="*{enPromocion}" class="form-checkbox">
+                                    <label for="enPromocion" class="checkbox-label">Producto en Promoción</label>
+                                </div>
+
+                                <div class="form-group promo-price" th:if="${producto.enPromocion}">
+                                    <label class="form-label" for="precioPromocional">Precio Promocional</label>
+                                    <div class="input-icon">
+                                        <span class="input-icon-text">$</span>
+                                        <input type="number" id="precioPromocional" th:field="*{precioPromocional}" class="form-input"
+                                               placeholder="0.00" step="0.01" min="0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3 class="section-title">Imagen del Producto</h3>
+
+                            <div class="image-upload">
+                                <div class="image-preview" th:if="${producto.imagenUrl}">
+                                    <img th:src="${producto.imagenUrl}" alt="Imagen actual" class="preview-img">
+                                    <p class="image-label">Imagen actual</p>
+                                </div>
+
+                                <div class="image-placeholder" th:unless="${producto.imagenUrl}">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                        <polyline points="21 15 16 10 5 21"></polyline>
+                                    </svg>
+                                    <p>Sin imagen</p>
+                                </div>
+
+                                <div class="file-input-wrapper">
+                                    <label for="imagen" class="file-label">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="17 8 12 3 7 8"></polyline>
+                                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                                        </svg>
+                                        <span th:text="${producto.imagenUrl} ? 'Cambiar imagen' : 'Seleccionar imagen'">Seleccionar</span>
+                                    </label>
+                                    <input type="file" id="imagen" name="imagen" accept="image/*" class="file-input">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <a th:href="@{/admin/productos}" class="btn btn-secondary">
+                            Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <span th:text="${producto.id != null} ? 'Actualizar Producto' : 'Guardar Producto'">Guardar</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <script th:src="@{/js/admin.js}"></script>
+</body>
+</html>

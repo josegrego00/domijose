@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-head :: admin-head}"></head>
+
+<body>
+    <div class="admin-wrapper">
+        <header th:replace="~{fragments/admin-header :: admin-header}"></header>
+        <nav th:replace="~{fragments/admin-sidebar :: admin-sidebar}"></nav>
+        
+        <main class="admin-main">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Productos</h1>
+                    <p class="page-subtitle">Gestiona tu inventario de productos</p>
+                </div>
+                <a th:href="@{/admin/productos/nuevo}" class="btn btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Nuevo Producto
+                </a>
+            </div>
+
+            <div th:if="${param.success}" class="alert alert-success">
+                Producto creado exitosamente
+            </div>
+            <div th:if="${param.updated}" class="alert alert-success">
+                Producto actualizado exitosamente
+            </div>
+            <div th:if="${param.deleted}" class="alert alert-success">
+                Producto eliminado exitosamente
+            </div>
+
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Imagen</th>
+                            <th>Nombre</th>
+                            <th>Código</th>
+                            <th>Precio</th>
+                            <th>Disponible</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="producto : ${productos.content}">
+                            <td>
+                                <div class="product-image" th:if="${producto.imagenUrl}">
+                                    <img th:src="${producto.imagenUrl}" alt="${producto.nombre}">
+                                </div>
+                                <div class="product-image product-image-placeholder" th:unless="${producto.imagenUrl}">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                        <polyline points="21 15 16 10 5 21"></polyline>
+                                    </svg>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="product-name" th:text="${producto.nombre}">Nombre</span>
+                                <span th:if="${producto.enPromocion}" class="badge badge-promo">PROMO</span>
+                            </td>
+                            <td th:text="${producto.codigo}">COD001</td>
+                            <td>
+                                <span th:if="${producto.enPromocion && producto.precioPromocional != null}" 
+                                      class="price-old" th:text="${'$' + producto.precioVenta}">$100</span>
+                                <span th:if="${producto.enPromocion && producto.precioPromocional != null}" 
+                                      class="price-promo" th:text="${'$' + producto.precioPromocional}">$80</span>
+                                <span th:unless="${producto.enPromocion && producto.precioPromocional != null}" 
+                                      th:text="${'$' + producto.precioVenta}">$100</span>
+                            </td>
+                            <td>
+                                <span th:if="${producto.disponible}" class="badge badge-success">Sí</span>
+                                <span th:unless="${producto.disponible}" class="badge badge-danger">No</span>
+                            </td>
+                            <td>
+                                <span th:if="${producto.activo}" class="badge badge-success">Activo</span>
+                                <span th:unless="${producto.activo}" class="badge badge-danger">Inactivo</span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a th:href="@{/admin/productos/{id}/editar(id=${producto.id})}" class="btn btn-icon btn-secondary" title="Editar">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                        </svg>
+                                    </a>
+                                    <form th:action="@{/admin/productos/{id}/eliminar(id=${producto.id})}" method="post">
+                                        <button type="submit" class="btn btn-icon btn-danger" title="Eliminar" 
+                                                data-confirm="¿Estás seguro de eliminar este producto?">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${productos.content.isEmpty()}">
+                            <td colspan="7" class="empty-message">
+                                No hay productos registrados
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination" th:if="${productos.totalPages > 1}">
+                <a th:if="${productos.hasPrevious()}" 
+                   th:href="@{/admin/productos(page=${productos.number - 1})}" 
+                   class="pagination-btn">
+                    Anterior
+                </a>
+                <span class="pagination-info">
+                    Página <span th:text="${productos.number + 1}">1</span> de <span th:text="${productos.totalPages}">5</span>
+                </span>
+                <a th:if="${productos.hasNext()}" 
+                   th:href="@{/admin/productos(page=${productos.number + 1})}" 
+                   class="pagination-btn">
+                    Siguiente
+                </a>
+            </div>
+        </main>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <script th:src="@{/js/admin.js}"></script>
+</body>
+</html>

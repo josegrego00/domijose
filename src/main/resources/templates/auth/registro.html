@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - AppDomirest</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/global.css}">
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+</head>
+
+<body>
+    <div class="decoration-line left"></div>
+    <div class="decoration-line right"></div>
+
+    <div class="auth-container">
+        <div class="auth-header">
+            <a th:href="@{/}" class="back-link">← Volver al inicio</a>
+            <h1 class="auth-title">Crear Cuenta</h1>
+            <p class="auth-subtitle">Regístrate para comenzar</p>
+        </div>
+
+
+        <form th:action="@{/register}" method="post" th:object="${user}">
+
+            <div th:if="${#fields.hasErrors('*')}" class="alert alert-error">
+                Por favor corrige los errores indicados
+            </div>
+            <div class="form-group">
+                <label for="username" class="form-label">Usuario *</label>
+                <input type="text" class="form-input" id="username" th:field="*{username}"
+                    placeholder="Elige tu nombre de usuario" required>
+                <span class="error-text" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="telefono" class="form-label">Teléfono *</label>
+                <input type="tel" class="form-input" id="telefono" th:field="*{telefono}" placeholder="3001234567"
+                    required>
+                <span class="error-text" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-input" id="email" th:field="*{email}" placeholder="correo@ejemplo.com">
+                <span class="error-text" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">Contraseña *</label>
+                <input type="password" class="form-input" id="password" th:field="*{password}"
+                    placeholder="Mínimo 6 caracteres" required>
+                <span class="error-text" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword" class="form-label">Confirmar Contraseña *</label>
+                <input type="password" class="form-input" id="confirmPassword" name="confirmPassword"
+                    placeholder="Repite tu contraseña" required>
+                <span class="error-text" th:if="${confirmPasswordError}" th:text="${confirmPasswordError}"></span>
+            </div>
+
+            <button type="submit" class="submit-btn">Crear Cuenta</button>
+        </form>
+
+        <div class="form-footer">
+            <span>¿Ya tienes cuenta? </span>
+            <a th:href="@{/login}">Inicia sesión</a>
+        </div>
+    </div>
+</body>
+
+</html>

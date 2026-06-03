@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/admin-head :: admin-head}"></head>
+
+<body>
+    <div class="admin-wrapper">
+        <header th:replace="~{fragments/admin-header :: admin-header}"></header>
+        <nav th:replace="~{fragments/admin-sidebar :: admin-sidebar}"></nav>
+
+        <main class="admin-main">
+            <h1 class="page-title">Dashboard</h1>
+            <p class="page-subtitle">Bienvenido al panel de administración</p>
+
+            <div class="stats-grid">
+                <div class="stat-card stat-pendientes">
+                    <div class="stat-icon pending">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </div>
+                    <p class="stat-label">Pedidos Pendientes</p>
+                    <p class="stat-value" th:text="${cantidadPendientes}" id="stat-pendientes">0</p>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon products">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z">
+                            </path>
+                            <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                        </svg>
+                    </div>
+                    <p class="stat-label">Total Productos</p>
+                    <p class="stat-value" th:text="${totalProductos}" id="stat-productos">0</p>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon users">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                    </div>
+                    <p class="stat-label">Usuarios Activos</p>
+                    <p class="stat-value" th:text="${totalUsuarios}" id="stat-usuarios">0</p>
+                </div>
+
+
+                <div class="stat-card">
+                    <div class="stat-icon promo">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polygon
+                                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                            </polygon>
+                        </svg>
+                    </div>
+                    <p class="stat-label">En Promo</p>
+                    <p class="stat-value" th:text="${productosPromocion.size()}" id="stat-promo">0</p>
+                </div>
+
+
+            </div>
+        </main>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <script th:src="@{/js/admin.js}"></script>
+</body>
+
+</html>

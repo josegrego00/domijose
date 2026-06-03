@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-head :: admin-head}"></head>
+
+<body>
+    <div class="admin-wrapper">
+        <header th:replace="~{fragments/admin-header :: admin-header}"></header>
+        <nav th:replace="~{fragments/admin-sidebar :: admin-sidebar}"></nav>
+
+        <main class="admin-main">
+            <div class="form-container">
+                <div class="form-header">
+                    <h1 class="page-title" th:text="${esNuevo} ? 'Nuevo Administrador' : 'Editar Administrador'">Administrador</h1>
+                    <p class="page-subtitle" th:text="${esNuevo} ? 'Completa los datos del nuevo administrador' : 'Actualiza los datos del administrador'">Formulario</p>
+                </div>
+
+                <div th:if="${error}" class="alert alert-error">
+                    <span th:text="${error}">Error message</span>
+                </div>
+
+                <form th:action="${!esNuevo} ? @{/admin/admins/{id}(id=${admin.id})} : @{/admin/admins}"
+                      th:object="${admin}"
+                      method="post"
+                      class="admin-form">
+
+                    <div class="form-section">
+                        <h3 class="section-title">Información de Acceso</h3>
+
+                        <div class="form-group">
+                            <label class="form-label" for="username">Username *</label>
+                            <input type="text" id="username" th:field="*{username}" class="form-input"
+                                   placeholder="Nombre de usuario" required>
+                            <span class="error-text" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
+                        </div>
+
+                        <div class="form-group" th:if="${esNuevo}">
+                            <label class="form-label" for="password">Contraseña *</label>
+                            <input type="password" id="password" th:field="*{password}" class="form-input"
+                                   placeholder="Mínimo 6 caracteres" required>
+                            <span class="error-text" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+                        </div>
+
+                        <div class="form-group" th:unless="${esNuevo}">
+                            <label class="form-label" for="password">Nueva Contraseña (opcional)</label>
+                            <input type="password" id="password" th:field="*{password}" class="form-input"
+                                   placeholder="Dejar vacío para mantener la actual">
+                            <span class="error-text" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 class="section-title">Información Personal</h3>
+
+                        <div class="form-group">
+                            <label class="form-label" for="telefono">Teléfono *</label>
+                            <input type="text" id="telefono" th:field="*{telefono}" class="form-input"
+                                   placeholder="3001234567" required>
+                            <span class="error-text" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="email">Email *</label>
+                            <input type="email" id="email" th:field="*{email}" class="form-input"
+                                   placeholder="admin@example.com" required>
+                            <span class="error-text" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="direccion">Dirección</label>
+                            <input type="text" id="direccion" th:field="*{direccion}" class="form-input"
+                                   placeholder="Dirección opcional">
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <a th:href="@{/admin/admins}" class="btn btn-secondary">
+                            Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <span th:text="${esNuevo} ? 'Crear Administrador' : 'Actualizar'">Guardar</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <script th:src="@{/js/admin.js}"></script>
+</body>
+</html>
